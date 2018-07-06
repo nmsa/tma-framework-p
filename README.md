@@ -5,7 +5,7 @@
 The `TMA_Planning` is responsible for analyzing the measurements calculated by `TMA_Analyze`. 
 All the scores that need to be consumed by `TMA_Planning` and will enqueued by `TMA_Analyze` on the `planning` topic. 
 The `TMA_Planning` is responsible for executing the verification of the predefined rules.
-For each rule that is not respected, one mor more adaptations will be generated, which will be gathererd in a set of adaptations.
+For each rule that is not respected, one or more adaptations will be generated, which will be gathererd in a set of adaptations.
 
 The next step is to consolidate this set of adaptations in a "adaptation plan" by dealing with conflicting rules and priorities. In practice, this consolidated "adaptation plan" is optimized to allow the system to recover the desired levels of trustworthiness.
 
