@@ -1,4 +1,4 @@
-package eu.atmosphere.tma.planning;
+package eubr.atmosphere.tma.planning;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
