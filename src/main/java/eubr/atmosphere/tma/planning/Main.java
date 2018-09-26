@@ -20,6 +20,7 @@ public class Main
     public static void main( String[] args )
     {
         LOGGER.info("Hello World!");
+        runConsumer();
     }
 
     private static void runConsumer() {
