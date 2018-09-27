@@ -1,7 +1,5 @@
 package eubr.atmosphere.tma.planning;
 
-import java.util.Iterator;
-
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
@@ -55,7 +53,19 @@ public class Main
 
           // commits the offset of record to broker.
           consumer.commitAsync();
+
+          sleep(2000);
         }
         consumer.close();
+    }
+
+    private static void sleep(int millis) {
+        try {
+            System.out.println("=== PAUSE (" + millis + ")===");
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
