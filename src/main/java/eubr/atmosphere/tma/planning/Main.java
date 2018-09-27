@@ -3,6 +3,13 @@ package eubr.atmosphere.tma.planning;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.drools.core.impl.InternalKnowledgeBase;
+import org.drools.core.impl.KnowledgeBaseFactory;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieSession;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,11 +27,11 @@ public class Main
 
     public static void main( String[] args )
     {
-        LOGGER.info("Hello World!");
-        runConsumer();
+        KieSession ksession = initSession();
+        runConsumer(ksession);
     }
 
-    private static void runConsumer() {
+    private static void runConsumer(KieSession ksession) {
 
         Consumer<Long, String> consumer = ConsumerCreator.createConsumer();
         int noMessageFound = 0;
@@ -50,8 +57,10 @@ public class Main
 
               // Manipulate the records
               consumerRecords.forEach(record -> {
-                  validateValue(record);
+                  validateValue(record, ksession);
                });
+
+              ksession.fireAllRules();
 
               // commits the offset of record to broker.
               consumer.commitAsync();
@@ -61,7 +70,7 @@ public class Main
         }
     }
 
-    private static void validateValue(ConsumerRecord<Long, String> record) {
+    private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
         System.out.println("Record Key " + record.key());
         System.out.println("Record value " + record.value());
         System.out.println("Record partition " + record.partition());
@@ -70,15 +79,32 @@ public class Main
         if (Double.parseDouble(record.value()) > threshold) {
             System.out.println("Add item to the new topic");
         }
+        ksession.insert(record.value());
     }
 
     private static void sleep(int millis) {
         try {
-            System.out.println("=== PAUSE (" + millis + ")===");
+            System.out.println("=== PAUSE (" + millis + ") ===");
             Thread.sleep(millis);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private static KieSession initSession() {
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kbuilder.add( ResourceFactory.newClassPathResource( "Probes.drl",
+                                                            Main.class ),
+                                                            ResourceType.DRL );
+
+        final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addPackages( kbuilder.getKnowledgePackages() );
+
+        if ( kbuilder.hasErrors() ) {
+            throw new RuntimeException( "Compilation error.\n" + kbuilder.getErrors().toString() );
+        }
+
+        return kbase.newKieSession();
     }
 }

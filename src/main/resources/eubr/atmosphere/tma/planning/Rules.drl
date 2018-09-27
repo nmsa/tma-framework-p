@@ -1,0 +1,89 @@
+package eubr.atmosphere.tma.planning
+ 
+dialect "mvel"
+
+/*import org.drools.examples.services.Post
+import org.drools.examples.probes.ReadingEvent
+
+import java.util.ArrayList
+
+declare ReadingEvent
+      @role(event)
+      //@expires(1s)
+      //@timestamp (eventDestinationTimestamp)
+ end*/
+ 
+rule "Score validation"
+
+    when
+        Number (value)
+    then
+        System.out.println( "The current score is: (TBD: $value)" );
+
+end
+ 
+/*rule "[Probes] Post added"
+
+    when
+        $p : Post((id %2) == 0)
+    then
+        System.out.println( "[Probes] Id: " + $p.id + " / Title: " + $p.title );
+end
+
+
+rule "[Probes] Request Rest"
+
+    when
+        $p : Post(id == 13)
+    then
+        System.out.println( "[Probes] I am " + $p.id + " / Title: " + $p.title );
+        Actuator.adapt($p.id);
+end
+
+rule "[Probes] Change Max after 3 occurrences"
+
+	when
+		Number( avg : doubleValue > 25.0 ) from accumulate(
+			ReadingEvent( $reading_value : value ) over window:length( 3 ), 
+			average ( $reading_value ) )
+		$p : Producer(  )
+	then
+		System.out.println( "[Probes] Changing behavior (max)" );
+		System.out.println( avg );
+		modify ( $p ) { setMax (25 - $p.min) }
+end
+
+rule "[Probes] Change Min after 3 occurrences"
+
+	when
+		Number( avg : doubleValue < 5.0 ) from accumulate(
+			ReadingEvent( $reading_value : value ) over window:length( 3 ), 
+			average ( $reading_value ) )
+		$p : Producer(  )
+	then
+		System.out.println( "[Probes] Changing behavior (min)" );
+		System.out.println( avg );
+		modify ( $p ) { setMin (5) }
+end
+
+rule "[Probes] Change Max Limit"
+
+	when
+		$r : ReadingEvent( value > 25.0 ) over window:time( 10s )
+		$p : Producer(  )
+	then
+		System.out.println( "[Probes] Just a new rule " + $r.value );
+		System.out.println( "Producer: " + $p.min + " / " + $p.max);
+		modify ( $p ) { setMax (25 - $p.min) }
+end
+
+rule "[Probes] Change Min Limit"
+
+	when
+		$r : ReadingEvent( value < 5.0 ) over window:time( 1s )
+		$p : Producer(  )
+	then
+		System.out.println( "[Probes] We've got a new rule " + $r.value );
+		System.out.println( "Producer: " + $p.min + " / " + $p.max);
+		modify ( $p ) { setMin (5) }
+end*/
