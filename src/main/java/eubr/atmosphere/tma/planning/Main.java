@@ -1,6 +1,7 @@
 package eubr.atmosphere.tma.planning;
 
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,8 @@ public class Main
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
+    private static final double threshold = 0.4;
+
     public static void main( String[] args )
     {
         LOGGER.info("Hello World!");
@@ -26,37 +29,47 @@ public class Main
         Consumer<Long, String> consumer = ConsumerCreator.createConsumer();
         int noMessageFound = 0;
 
-        while (true) {
+        try {
+            while (true) {
 
-          ConsumerRecords<Long, String> consumerRecords = consumer.poll(1000);
+              ConsumerRecords<Long, String> consumerRecords = consumer.poll(1000);
 
-          // 1000 is the time in milliseconds consumer will wait if no record is found at broker.
-          if (consumerRecords.count() == 0) {
-              noMessageFound++;
+              // 1000 is the time in milliseconds consumer will wait if no record is found at broker.
+              if (consumerRecords.count() == 0) {
+                  noMessageFound++;
 
-              int maxNoMessageFoundCount =
-                      Integer.parseInt(PropertiesManager.getInstance().getProperty("maxNoMessageFoundCount"));
-              if (noMessageFound > maxNoMessageFoundCount)
-                // If no message found count is reached to threshold exit loop.
-                break;
-              else
-                  continue;
-          }
+                  int maxNoMessageFoundCount =
+                          Integer.parseInt(PropertiesManager.getInstance().getProperty("maxNoMessageFoundCount"));
+                  if (noMessageFound > maxNoMessageFoundCount) {
+                    // If no message found count is reached to threshold exit loop.
+                      sleep(2000);
+                  } else {
+                    continue;
+                  }
+              }
 
-          //print each record.
-          consumerRecords.forEach(record -> {
-              System.out.println("Record Key " + record.key());
-              System.out.println("Record value " + record.value());
-              System.out.println("Record partition " + record.partition());
-              System.out.println("Record offset " + record.offset());
-           });
+              // Manipulate the records
+              consumerRecords.forEach(record -> {
+                  validateValue(record);
+               });
 
-          // commits the offset of record to broker.
-          consumer.commitAsync();
-
-          sleep(2000);
+              // commits the offset of record to broker.
+              consumer.commitAsync();
+            }
+        } finally {
+            consumer.close();
         }
-        consumer.close();
+    }
+
+    private static void validateValue(ConsumerRecord<Long, String> record) {
+        System.out.println("Record Key " + record.key());
+        System.out.println("Record value " + record.value());
+        System.out.println("Record partition " + record.partition());
+        System.out.println("Record offset " + record.offset());
+
+        if (Double.parseDouble(record.value()) > threshold) {
+            System.out.println("Add item to the new topic");
+        }
     }
 
     private static void sleep(int millis) {
