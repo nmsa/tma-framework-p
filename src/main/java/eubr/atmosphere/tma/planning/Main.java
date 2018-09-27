@@ -27,7 +27,7 @@ public class Main
 
     public static void main( String[] args )
     {
-        KieSession ksession = initSession();
+        final KieSession ksession = initSession();
         runConsumer(ksession);
     }
 
@@ -61,6 +61,7 @@ public class Main
                });
 
               ksession.fireAllRules();
+              LOGGER.info("Rules were applied!");
 
               // commits the offset of record to broker.
               consumer.commitAsync();
@@ -71,15 +72,8 @@ public class Main
     }
 
     private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
-        System.out.println("Record Key " + record.key());
-        System.out.println("Record value " + record.value());
-        System.out.println("Record partition " + record.partition());
-        System.out.println("Record offset " + record.offset());
-
-        if (Double.parseDouble(record.value()) > threshold) {
-            System.out.println("Add item to the new topic");
-        }
-        ksession.insert(record.value());
+        ksession.insert(record);
+        ksession.insert(Double.parseDouble(record.value()));
     }
 
     private static void sleep(int millis) {

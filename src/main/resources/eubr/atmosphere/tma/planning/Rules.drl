@@ -2,6 +2,7 @@ package eubr.atmosphere.tma.planning
  
 dialect "mvel"
 
+import org.apache.kafka.clients.consumer.ConsumerRecord
 /*import org.drools.examples.services.Post
 import org.drools.examples.probes.ReadingEvent
 
@@ -14,14 +15,19 @@ declare ReadingEvent
  end*/
  
 rule "Score validation"
-
     when
-        Number ( )
+        $number: Number ( )
     then
-        System.out.println( "The current score is: (TBD: $value)" );
-
+        System.out.println( "The current score is: " + $number.toString());
 end
- 
+
+rule "A dumb rule"
+    when
+        $c : ConsumerRecord ( )
+    then
+        System.out.println( "Validating if the rules file works :) " + $c);
+end
+
 /*rule "[Probes] Post added"
 
     when
