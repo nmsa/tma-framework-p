@@ -23,8 +23,6 @@ public class Main
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    private static final double threshold = 0.4;
-
     public static void main( String[] args )
     {
         final KieSession ksession = initSession();
@@ -78,10 +76,8 @@ public class Main
 
     private static void sleep(int millis) {
         try {
-            System.out.println("=== PAUSE (" + millis + ") ===");
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
