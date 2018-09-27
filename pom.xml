@@ -96,6 +96,18 @@
       </pluginManagement>
   </build>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-bom</artifactId>
+        <type>pom</type>
+        <version>7.11.0.Final</version>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -118,7 +130,21 @@
     <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
-        <version>7.11.0.Final</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.kie/kie-internal -->
+    <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-internal</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-api</artifactId>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.drools/drools-compiler -->
+    <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-compiler</artifactId>
+        <scope>runtime</scope>
     </dependency>
   </dependencies>
 </project>

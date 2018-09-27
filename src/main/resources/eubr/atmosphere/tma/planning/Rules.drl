@@ -16,7 +16,7 @@ declare ReadingEvent
 rule "Score validation"
 
     when
-        Number (value)
+        Number ( )
     then
         System.out.println( "The current score is: (TBD: $value)" );
 
