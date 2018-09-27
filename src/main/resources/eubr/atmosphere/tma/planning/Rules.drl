@@ -24,9 +24,10 @@ end
 
 rule "Score validation 2"
     when
-        $c : ConsumerRecord ( )
+        $c : ConsumerRecord ( Double.parseDouble(value) > 0.4 )
     then
         System.out.println( "Validating if the rules file works :) " + $c);
+        System.out.println( "Value is " + $c.value);
         AdaptationManager.performAdaptation();
 end
 
