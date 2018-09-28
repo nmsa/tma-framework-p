@@ -20,4 +20,9 @@ public class Action {
     public void setResourceId(int resourceId) {
         this.resourceId = resourceId;
     }
+
+    public Action(String action, int resourceId) {
+        this.action = action;
+        this.resourceId = resourceId;
+    }
 }

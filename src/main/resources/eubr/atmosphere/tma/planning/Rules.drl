@@ -4,6 +4,8 @@ dialect "mvel"
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import eubr.atmosphere.tma.planning.AdaptationManager
+import eubr.atmosphere.tma.planning.Action
+
 /*import org.drools.examples.services.Post
 import org.drools.examples.probes.ReadingEvent
 
@@ -28,7 +30,9 @@ rule "Score validation 2"
     then
         System.out.println( "Validating if the rules file works :) " + $c);
         System.out.println( "Value is " + $c.value);
-        AdaptationManager.performAdaptation();
+
+        Action action = new Action("Test Action drools", 45)
+        AdaptationManager.performAdaptation( action );
 end
 
 /*rule "[Probes] Post added"
