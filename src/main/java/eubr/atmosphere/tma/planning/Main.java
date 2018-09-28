@@ -13,7 +13,10 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 import eubr.atmosphere.tma.planning.utils.PropertiesManager;
+import eubr.atmosphere.tma.utils.Score;
 
 /**
  * Hello world!
@@ -71,7 +74,9 @@ public class Main
 
     private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
         ksession.insert(record);
-        ksession.insert(Double.parseDouble(record.value()));
+        String stringJsonScore = record.value();
+        Score score = new Gson().fromJson(stringJsonScore, Score.class);
+        ksession.insert(score);
     }
 
     private static void sleep(int millis) {
