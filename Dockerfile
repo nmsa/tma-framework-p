@@ -1,4 +1,4 @@
-FROM    maven:3.5.3-jdk-8-alpine
+FROM    tma-utils:0.1
 
 ENV     planning      /atmosphere/tma/planning
 
