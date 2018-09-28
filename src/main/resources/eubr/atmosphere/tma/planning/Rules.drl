@@ -5,6 +5,7 @@ dialect "mvel"
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import eubr.atmosphere.tma.planning.AdaptationManager
 import eubr.atmosphere.tma.planning.Action
+import eubr.atmosphere.tma.utils.Score
 
 /*import org.drools.examples.services.Post
 import org.drools.examples.probes.ReadingEvent
@@ -17,7 +18,7 @@ declare ReadingEvent
       //@timestamp (eventDestinationTimestamp)
  end*/
  
-rule "Score validation"
+rule "Score validation number"
     when
         $number: Number ( )
     then
