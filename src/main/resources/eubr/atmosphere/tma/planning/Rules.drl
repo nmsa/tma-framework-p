@@ -31,7 +31,7 @@ rule "Score validation 2"
         System.out.println( "Validating if the rules file works :) " + $c);
         System.out.println( "Value is " + $c.value);
 
-        Action action = new Action("Test Action drools", 45)
+        Action action = new Action("Test Action drools", 45);
         AdaptationManager.performAdaptation( action );
 end
 
