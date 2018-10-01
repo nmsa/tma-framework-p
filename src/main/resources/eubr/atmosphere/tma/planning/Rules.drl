@@ -6,10 +6,6 @@ import eubr.atmosphere.tma.planning.AdaptationManager
 import eubr.atmosphere.tma.planning.Action
 import eubr.atmosphere.tma.utils.Score
 
-/*import org.drools.examples.services.Post
-import org.drools.examples.probes.ReadingEvent
-
-import java.util.ArrayList*/
 
 declare Score
       @role(event)
@@ -42,33 +38,3 @@ rule "Score validation average"
         Action action = new Action("Average-high " + $my_avg.toString(), 8);
         AdaptationManager.performAdaptation( action );
 end
-
-/*rule "[Probes] Request Rest"
-
-    when
-        $p : Post(id == 13)
-    then
-        System.out.println( "[Probes] I am " + $p.id + " / Title: " + $p.title );
-        Actuator.adapt($p.id);
-end
-
-rule "[Probes] Post added"
-
-    when
-        $p : Post((id %2) == 0)
-    then
-        System.out.println( "[Probes] Id: " + $p.id + " / Title: " + $p.title );
-end
-
-rule "[Probes] Change Max after 3 occurrences"
-
-	when
-		Number( avg : doubleValue > 25.0 ) from accumulate(
-			ReadingEvent( $reading_value : value ) over window:length( 3 ), 
-			average ( $reading_value ) )
-		$p : Producer(  )
-	then
-		System.out.println( "[Probes] Changing behavior (max)" );
-		System.out.println( avg );
-		modify ( $p ) { setMax (25 - $p.min) }
-end*/
