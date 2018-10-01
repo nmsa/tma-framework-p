@@ -14,27 +14,28 @@ declare Score
  end
 
 
-rule "Score validation number"
+/*rule "Score validation number"
     when
         $number: Number ( )
     then
         System.out.println( "The current score is: " + $number.toString());
-end
+end*/
 
 rule "Score validation"
     when
         $score: Score ( score > 0.4 )
     then
-        Action action = new Action("[Score] High score: " + $score.toString(), 11);
+        Action action = new Action("[Score A] High score: " + $score.toString(), 11);
         AdaptationManager.performAdaptation( action );
 end
 
-rule "Score validation average"
+/*rule "Score validation average"
     when
-	$my_avg : Number( avg : doubleValue > 0.35 ) from accumulate(
-			Score( $score : score ) over window:length( 5 ),
-			average ( $score ) )
+        Number( avg : doubleValue > 0.35 ) from accumulate(
+		Score( $my_score : score ) over window:length( 5 ),
+		average ( $my_score ) )
     then
-        Action action = new Action("Average-high " + $my_avg.toString(), 8);
+        System.out.println(avg);
+        Action action = new Action("[Score B] Average-high ", 8);
         AdaptationManager.performAdaptation( action );
-end
+end*/
