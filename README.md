@@ -1,10 +1,15 @@
-# tma-planning
+# TMA Planning
 
 This project aims to:
 * Consume the items from a topic queue;
 * Check if the scores from the queue are in the proper threshold;
 * Add a action item to a queue when an adaption is needed.
 
+## Prerequisites
+
+This component requires the software available in [tma-utils](https://github.com/joseadp/tma-utils).
+
+## Installation
 
 This is a simple module to validate the score of the metrics from Kubernetes.
 
