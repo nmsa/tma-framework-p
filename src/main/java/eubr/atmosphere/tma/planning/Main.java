@@ -26,16 +26,16 @@ public class Main
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    public static void main( String[] args )
-    {
+    public static void main( String[] args ) {
         final KieSession ksession = initSession();
         runConsumer(ksession);
     }
 
     private static void runConsumer(KieSession ksession) {
-
         Consumer<Long, String> consumer = ConsumerCreator.createConsumer();
         int noMessageFound = 0;
+        int maxNoMessageFoundCount =
+                Integer.parseInt(PropertiesManager.getInstance().getProperty("maxNoMessageFoundCount"));
 
         try {
             while (true) {
@@ -46,8 +46,6 @@ public class Main
               if (consumerRecords.count() == 0) {
                   noMessageFound++;
 
-                  int maxNoMessageFoundCount =
-                          Integer.parseInt(PropertiesManager.getInstance().getProperty("maxNoMessageFoundCount"));
                   if (noMessageFound > maxNoMessageFoundCount) {
                     // If no message found count is reached to threshold exit loop.
                       sleep(2000);
@@ -66,6 +64,7 @@ public class Main
 
               // commits the offset of record to broker.
               consumer.commitAsync();
+              sleep(60000);
             }
         } finally {
             consumer.close();
