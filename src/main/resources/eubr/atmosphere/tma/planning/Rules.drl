@@ -3,7 +3,7 @@ package eubr.atmosphere.tma.planning
 dialect "mvel"
 
 import eubr.atmosphere.tma.planning.AdaptationManager
-import eubr.atmosphere.tma.planning.Action
+import eubr.atmosphere.tma.data.Action
 import eubr.atmosphere.tma.utils.Score
 
 
