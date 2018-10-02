@@ -25,7 +25,10 @@ rule "Score validation"
     when
         $score: Score ( score > 0.4 )
     then
-        Action action = new Action("[Score A] High score: " + $score.toString(), 11);
+        Action action = new Action("scale", 11);
+        action.addConfiguration(new Configuration("metadata.namespace", "default"));
+        action.addConfiguration(new Configuration("metadata.name", "tma-analyze"));
+        action.addConfiguration(new Configuration("spec.replicas", "5"));
         AdaptationManager.performAdaptation( action );
 end
 
