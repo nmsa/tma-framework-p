@@ -54,6 +54,8 @@ public class Main
                   }
               }
 
+              System.out.println(consumerRecords.count());
+
               // Manipulate the records
               consumerRecords.forEach(record -> {
                   validateValue(record, ksession);
@@ -74,6 +76,7 @@ public class Main
     private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
         String stringJsonScore = record.value();
         Score score = new Gson().fromJson(stringJsonScore, Score.class);
+        score.getScore();
         ksession.insert(score);
     }
 
