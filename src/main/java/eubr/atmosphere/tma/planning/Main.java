@@ -77,6 +77,7 @@ public class Main
         String stringJsonScore = record.value();
         Score score = new Gson().fromJson(stringJsonScore, Score.class);
         LOGGER.info("Score: {}", score.getScore());
+        LOGGER.info("Offset: {}", record.offset());
         ksession.insert(score);
     }
 
