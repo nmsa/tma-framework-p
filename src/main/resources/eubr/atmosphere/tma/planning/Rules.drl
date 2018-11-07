@@ -27,7 +27,7 @@ rule "Score validation - Wildfly Scale up"
         $score: Score ( score > 0.0268 )
         // TODO: It would be better to check the number of actions that are running as another condition
     then
-        Action action = new Action("scale", 9, 3);
+        Action action = new Action("scale", 9, 5);
         action.addConfiguration(new Configuration("metadata.namespace", "default"));
         action.addConfiguration(new Configuration("metadata.name", "wildfly"));
         action.addConfiguration(new Configuration("spec.replicas", "3"));
