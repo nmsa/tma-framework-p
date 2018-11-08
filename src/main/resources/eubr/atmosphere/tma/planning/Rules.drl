@@ -24,11 +24,12 @@ end*/
 
 rule "Score validation - Wildfly Scale up"
     when
-        $score: Score ( score > 0.0268 )
+        $score: Score ( score > 0.0310 )
         KubernetesManager.getReplicas("wildfly") != 3
     then
         System.out.println(score);
         Action action = new Action("scale", 9, 5);
+        System.out.println($score.toString());
         action.addConfiguration(new Configuration("metadata.namespace", "default"));
         action.addConfiguration(new Configuration("metadata.name", "wildfly"));
         action.addConfiguration(new Configuration("spec.replicas", "3"));
@@ -37,7 +38,7 @@ end
 
 rule "Score validation - Wildfly Scale down"
     when
-        $score: Score ( score < 0.0200 )
+        $score: Score ( score < 0.03080 )
         KubernetesManager.getReplicas("wildfly") != 1
     then
         System.out.println(score);
