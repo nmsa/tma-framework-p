@@ -6,7 +6,7 @@ import eubr.atmosphere.tma.planning.AdaptationManager
 import eubr.atmosphere.tma.data.Action
 import eubr.atmosphere.tma.data.Configuration
 import eubr.atmosphere.tma.utils.Score
-
+import eubr.atmosphere.tma.planning.KubernetesManager
 
 declare Score
       @role(event)
@@ -25,8 +25,9 @@ end*/
 rule "Score validation - Wildfly Scale up"
     when
         $score: Score ( score > 0.0268 )
-        // TODO: It would be better to check the number of actions that are running as another condition
+        KubernetesManager.getReplicas("wildfly") != 3
     then
+        System.out.println(score);
         Action action = new Action("scale", 9, 5);
         action.addConfiguration(new Configuration("metadata.namespace", "default"));
         action.addConfiguration(new Configuration("metadata.name", "wildfly"));
@@ -37,8 +38,9 @@ end
 rule "Score validation - Wildfly Scale down"
     when
         $score: Score ( score < 0.0200 )
-        // TODO: It would be better to check the number of actions that are running as another condition
+        KubernetesManager.getReplicas("wildfly") != 1
     then
+        System.out.println(score);
         Action action = new Action("scale", 9, 5);
         action.addConfiguration(new Configuration("metadata.namespace", "default"));
         action.addConfiguration(new Configuration("metadata.name", "wildfly"));

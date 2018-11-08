@@ -27,6 +27,7 @@ public class Main
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main( String[] args ) {
+        LOGGER.info("Replicas: {}", KubernetesManager.getReplicas("wildfly"));
         final KieSession ksession = initSession();
         runConsumer(ksession);
     }
