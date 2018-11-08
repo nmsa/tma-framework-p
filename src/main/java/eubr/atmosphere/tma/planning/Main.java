@@ -18,10 +18,6 @@ import com.google.gson.Gson;
 import eubr.atmosphere.tma.planning.utils.PropertiesManager;
 import eubr.atmosphere.tma.utils.Score;
 
-/**
- * Hello world!
- *
- */
 public class Main 
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
@@ -80,6 +76,9 @@ public class Main
         LOGGER.info("Score: {}", score.getScore());
         LOGGER.info("Offset: {}", record.offset());
         ksession.insert(score);
+
+        Replicas replicas = new Replicas(KubernetesManager.getReplicas("wildfly"));
+        ksession.insert(replicas);
     }
 
     private static void sleep(int millis) {
