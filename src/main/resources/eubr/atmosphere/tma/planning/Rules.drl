@@ -27,7 +27,7 @@ rule "Score validation - Wildfly Scale up"
         $score: Score ( score > 0.0310 )
         $replicas: Replicas (count < 3)
     then
-        System.out.println(score);
+        System.out.println($score);
         Action action = new Action("scale", 9, 5);
         System.out.println($score.toString());
         action.addConfiguration(new Configuration("metadata.namespace", "default"));
@@ -41,7 +41,7 @@ rule "Score validation - Wildfly Scale down"
         $score: Score ( score < 0.03080 )
         $replicas: Replicas (count > 1)
     then
-        System.out.println(score);
+        System.out.println($score);
         Action action = new Action("scale", 9, 5);
         action.addConfiguration(new Configuration("metadata.namespace", "default"));
         action.addConfiguration(new Configuration("metadata.name", "wildfly"));

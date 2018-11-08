@@ -73,8 +73,7 @@ public class Main
     private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
         String stringJsonScore = record.value();
         Score score = new Gson().fromJson(stringJsonScore, Score.class);
-        LOGGER.info("Score: {}", score.getScore());
-        LOGGER.info("Offset: {}", record.offset());
+        LOGGER.info("Score: {} / Offset: {}", score.getScore(), record.offset());
         ksession.insert(score);
 
         Replicas replicas = new Replicas(KubernetesManager.getReplicas("wildfly"));
