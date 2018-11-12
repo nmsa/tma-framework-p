@@ -1,10 +1,14 @@
 package eubr.atmosphere.tma.planning;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
+import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.builder.KnowledgeBuilder;
@@ -21,6 +25,8 @@ import eubr.atmosphere.tma.utils.Score;
 public class Main 
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
+    private static List<FactHandle> factHandleList = new ArrayList<>();
 
     public static void main( String[] args ) {
         final KieSession ksession = initSession();
@@ -59,6 +65,7 @@ public class Main
 
               ksession.fireAllRules();
               LOGGER.info("Rules were applied! ksession.getFactCount(): {}", ksession.getFactCount());
+              removeFactHandles(ksession);
 
               // commits the offset of record to broker.
               consumer.commitAsync();
@@ -74,10 +81,16 @@ public class Main
         Score score = new Gson().fromJson(stringJsonScore, Score.class);
         LOGGER.info(record.toString());
         LOGGER.info("Score: {} / Offset: {}", score.getScore(), record.offset());
-        ksession.insert(score);
+        factHandleList.add(ksession.insert(score));
 
         Replicas replicas = new Replicas(KubernetesManager.getReplicas("wildfly"));
-        ksession.insert(replicas);
+        factHandleList.add(ksession.insert(replicas));
+    }
+
+    private static void removeFactHandles(KieSession ksession) {
+        for (FactHandle handle : factHandleList) {
+            ksession.delete(handle);
+        }
     }
 
     private static void sleep(int millis) {
