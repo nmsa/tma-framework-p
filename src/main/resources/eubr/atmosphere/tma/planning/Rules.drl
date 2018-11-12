@@ -11,7 +11,7 @@ import eubr.atmosphere.tma.planning.Replicas
 declare Score
       @role(event)
       @expires(1s)
-      @timestamp (eventDestinationTimestamp)
+      //@timestamp (eventDestinationTimestamp)
  end
 
 rule "Score validation - Wildfly Scale up"
