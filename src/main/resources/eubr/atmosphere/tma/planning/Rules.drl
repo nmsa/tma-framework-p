@@ -10,17 +10,9 @@ import eubr.atmosphere.tma.planning.Replicas
 
 declare Score
       @role(event)
-      //@expires(1s)
-      //@timestamp (eventDestinationTimestamp)
+      @expires(1s)
+      @timestamp (eventDestinationTimestamp)
  end
-
-
-/*rule "Score validation number"
-    when
-        $number: Number ( )
-    then
-        System.out.println( "The current score is: " + $number.toString());
-end*/
 
 rule "Score validation - Wildfly Scale up"
     when
@@ -29,7 +21,6 @@ rule "Score validation - Wildfly Scale up"
     then
         System.out.println($score);
         Action action = new Action("scale", 9, 5);
-        System.out.println($score.toString());
         action.addConfiguration(new Configuration("metadata.namespace", "default"));
         action.addConfiguration(new Configuration("metadata.name", "wildfly"));
         action.addConfiguration(new Configuration("spec.replicas", "3"));
