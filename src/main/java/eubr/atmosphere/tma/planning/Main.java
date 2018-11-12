@@ -58,7 +58,7 @@ public class Main
                });
 
               ksession.fireAllRules();
-              LOGGER.info("Rules were applied!");
+              LOGGER.info("Rules were applied! ksession.getFactCount(): {}", ksession.getFactCount());
 
               // commits the offset of record to broker.
               consumer.commitAsync();
