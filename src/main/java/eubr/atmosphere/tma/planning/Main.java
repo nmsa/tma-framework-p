@@ -23,7 +23,6 @@ public class Main
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main( String[] args ) {
-        LOGGER.info("Replicas: {}", KubernetesManager.getReplicas("wildfly"));
         final KieSession ksession = initSession();
         runConsumer(ksession);
     }
@@ -73,6 +72,7 @@ public class Main
     private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
         String stringJsonScore = record.value();
         Score score = new Gson().fromJson(stringJsonScore, Score.class);
+        LOGGER.info(record.toString());
         LOGGER.info("Score: {} / Offset: {}", score.getScore(), record.offset());
         ksession.insert(score);
 
