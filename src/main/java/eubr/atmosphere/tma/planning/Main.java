@@ -69,7 +69,7 @@ public class Main
 
               // commits the offset of record to broker.
               consumer.commitAsync();
-              sleep(60000);
+              sleep(30000);
             }
         } finally {
             consumer.close();
