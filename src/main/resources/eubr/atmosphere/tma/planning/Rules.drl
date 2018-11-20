@@ -17,13 +17,13 @@ declare Score
 rule "Score validation - Wildfly Scale up"
     when
         $score: Score ( score > 0.0340 )
-        $replicas: Replicas (count < 3)
+        $replicas: Replicas (count < 2)
     then
         System.out.println($score);
         Action action = new Action("scale", 9, 5);
         action.addConfiguration(new Configuration("metadata.namespace", "default"));
         action.addConfiguration(new Configuration("metadata.name", "wildfly"));
-        action.addConfiguration(new Configuration("spec.replicas", "3"));
+        action.addConfiguration(new Configuration("spec.replicas", "2"));
         AdaptationManager.performAdaptation( action );
 end
 
