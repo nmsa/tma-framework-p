@@ -82,9 +82,6 @@ public class Main
         LOGGER.info(record.toString());
         LOGGER.info("Score: {} / Offset: {}", score.getScore(), record.offset());
         factHandleList.add(ksession.insert(score));
-
-        Replicas replicas = new Replicas(KubernetesManager.getReplicas("wildfly"));
-        factHandleList.add(ksession.insert(replicas));
     }
 
     private static void removeFactHandles(KieSession ksession) {
