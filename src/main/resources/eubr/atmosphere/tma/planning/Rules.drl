@@ -15,7 +15,7 @@ declare Score
 
 rule "Score validation - Wildfly Scale up"
     when
-        $score: Score ( score > 0.0800 )
+        $score: Score ( score > 0.0800, podCount < 1 )
     then
         System.out.println($score);
         Action action = new Action("scale", 9, 5);
@@ -27,7 +27,7 @@ end
 
 rule "Score validation - Wildfly Scale down"
     when
-        $score: Score ( score < 0.0300 )
+        $score: Score ( score < 0.0300, podCount > 1 )
     then
         System.out.println($score);
         Action action = new Action("scale", 9, 5);
