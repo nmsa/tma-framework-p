@@ -19,12 +19,7 @@ public class KafkaManager {
     private final static String BOOTSTRAP_SERVERS =
             PropertiesManager.getInstance().getProperty("bootstrapServers");
 
-    static Producer<Long, String> producer = null;
-
-    public KafkaManager() {
-        if (producer == null)
-            producer = createProducer();
-    }
+    static Producer<Long, String> producer = createProducer();
 
     public void addItemKafka(String jsonAction) throws InterruptedException, ExecutionException {
         long time = System.currentTimeMillis();
@@ -33,13 +28,13 @@ public class KafkaManager {
         RecordMetadata metadata = producer.send(record).get();
         long elapsedTime = System.currentTimeMillis() - time;
         System.out.printf("sent record(key=%s value=%s) " +
-                        "meta(partition=%d, offset=%d) time=%d\n",
+                        "meta(partition=%d, offset=%d) time=%d %n",
                 record.key(), record.value(), metadata.partition(),
                 metadata.offset(), elapsedTime);
         producer.flush();
     }
 
-    private Producer<Long, String> createProducer() {
+    private static Producer<Long, String> createProducer() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                                             BOOTSTRAP_SERVERS);

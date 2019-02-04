@@ -7,11 +7,10 @@ import java.util.Properties;
 public class PropertiesManager {
 
     private static PropertiesManager instance = null;
-    private static Properties props = null;
+    private static Properties props = new Properties();
 
     private PropertiesManager() {
         InputStream inputStream = PropertiesManager.class.getResourceAsStream("/environment.properties");
-        props = new Properties();
         try {
             props.load(inputStream);
         } catch (IOException e) {
