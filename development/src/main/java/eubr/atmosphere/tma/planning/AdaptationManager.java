@@ -21,9 +21,9 @@ public class AdaptationManager {
         try {
             kafkaManager.addItemKafka(jsonElement.toString());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage(), e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage(), e);
         }
     }
 }

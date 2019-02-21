@@ -56,7 +56,7 @@ public class Main
                   }
               }
 
-              System.out.println(consumerRecords.count());
+              LOGGER.info("ConsumerRecords: {}", consumerRecords.count());
 
               // Manipulate the records
               consumerRecords.forEach(record -> {
@@ -94,7 +94,7 @@ public class Main
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage(), e);
         }
     }
 
