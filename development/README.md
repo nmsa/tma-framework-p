@@ -1,9 +1,9 @@
 # TMA Planning
 
 This project aims to:
-* Consume the items from a topic queue;
+* Consume the items from a topic queue (To be changed to the database);
 * Check if the scores from the queue are in the proper threshold;
-* Add a action item to a queue when an adaption is needed.
+* Create the adaptation plan with action items when an adaption is needed.
 
 ## Prerequisites
 
@@ -34,3 +34,6 @@ You can also check the items on topic. In order to do that, you should connect t
 kubectl exec -ti kafka-0 -- bash
 kafka-console-consumer.sh --topic topic-execute --bootstrap-server localhost:9093
 ```
+
+## Authors
+* José D'Abruzzo Pereira
