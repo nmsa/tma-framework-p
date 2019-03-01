@@ -11,8 +11,6 @@ The next step is to consolidate this set of adaptations in a "adaptation plan" b
 
 The resulting "adaptation plan", containing the adaptations that need to be performed, will be added to a queue to be executed by `TMA_Execute`, and will also be stored in the `TMA_Knowledge` for future reference. 
 
-> TBD: discuss plan structure better?
-
 Each adaptation action is added as a message to the `execute` queue. Each message should contain the following attributes:
 
 * `resourceId` -- identifies the resource to which the adaptation is targeted
