@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: tma-planning
+
+spec:
+  selector:
+    matchLabels:
+      run: tma-planning
+  template:
+    metadata:
+      labels:
+        run: tma-planning
+    spec:
+      containers:
+      - name: tma-planning
+        image: joseadp/tma-planning
