@@ -1,5 +1,6 @@
 package eubr.atmosphere.tma.planning.database;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ActionPlan {
@@ -9,6 +10,7 @@ public class ActionPlan {
         this.planId = planId;
         this.actionId = actionId;
         this.executionOrder = executionOrder;
+        this.configurationList = new ArrayList<ConfigurationData>();
     }
 
     public enum STATUS {
