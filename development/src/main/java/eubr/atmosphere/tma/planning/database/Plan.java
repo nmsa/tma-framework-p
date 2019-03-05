@@ -1,5 +1,8 @@
 package eubr.atmosphere.tma.planning.database;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Plan {
 
     // Maybe this class will need to be moved to tma-utils
@@ -20,11 +23,26 @@ public class Plan {
         }
     }
     
+    private int planId;
     private int metricId;
     private int qualityModelId;
     private long valueTime;
     private STATUS status; // TODO: define the possible status in a enum
+    private List<ActionPlan> actionList;
+
+    public Plan() {
+        super();
+        this.actionList = new ArrayList<ActionPlan>();
+    }
     
+    public int getPlanId() {
+        return planId;
+    }
+
+    public void setPlanId(int planId) {
+        this.planId = planId;
+    }
+
     public int getMetricId() {
         return metricId;
     }
@@ -56,4 +74,12 @@ public class Plan {
     public void setValueTime(long valueTime) {
         this.valueTime = valueTime;
     }
+
+    public List<ActionPlan> getActionList() {
+        return actionList;
+    }
+
+	public void addAction(ActionPlan action) {
+		this.actionList.add(action);
+	}
 }

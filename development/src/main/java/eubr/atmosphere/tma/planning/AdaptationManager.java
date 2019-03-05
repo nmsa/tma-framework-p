@@ -10,17 +10,21 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import eubr.atmosphere.tma.data.Action;
+import eubr.atmosphere.tma.planning.database.ActionPlan;
 import eubr.atmosphere.tma.planning.database.Plan;
 import eubr.atmosphere.tma.planning.database.PlanManager;
 
 public class AdaptationManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdaptationManager.class);
+    private static PlanManager planManager = new PlanManager();
 
     public static void performAdaptation(Action action) {
         LOGGER.info("Adaptation will be performed!");
 
-        createPlan();
+        Plan plan = createPlan();
+        // plan.addAction(action); // TO BE DEFINED!
+        planManager.saveActionPlan(plan);
 
         JsonElement jsonElement = new Gson().toJsonTree(action);
         KafkaManager kafkaManager = new KafkaManager();
@@ -34,7 +38,7 @@ public class AdaptationManager {
         }
     }
 
-    private static void createPlan() {
+    private static Plan createPlan() {
         Plan plan = new Plan();
         plan.setValueTime(Instant.now().getEpochSecond());
 
@@ -42,11 +46,22 @@ public class AdaptationManager {
         plan.setQualityModelId(1);
         plan.setStatus(Plan.STATUS.TO_DO);
 
-        PlanManager planManager = new PlanManager();
-        planManager.saveNewPlan(plan);
+        int planId = planManager.saveNewPlan(plan);
+        plan.setPlanId(planId);
+        return plan;
     }
 
     public static void testPlanCreation() {
-        createPlan();
+        Plan plan = createPlan();
+
+        /* Action action = new Action("scale", 9, 5);
+        action.addConfiguration(new Configuration("metadata.namespace", "default"));
+        action.addConfiguration(new Configuration("metadata.name", "wildfly"));
+        action.addConfiguration(new Configuration("spec.replicas", "3")); */
+
+        ActionPlan actionPlan = new ActionPlan(plan.getPlanId(), 1, 1);
+
+        plan.addAction(actionPlan);
+        planManager.saveActionPlan(plan);
     }
 }

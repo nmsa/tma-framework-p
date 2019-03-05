@@ -29,8 +29,33 @@ public class PlanManager {
             DatabaseManager databaseManager = new DatabaseManager();
             return databaseManager.execute(ps);
         } catch (SQLException e) {
-            LOGGER.error("[ATMOSPHERE] Error when inserting an actuator in the database.", e);
+            LOGGER.error("[ATMOSPHERE] Error when inserting a plan in the database.", e);
         }
         return -1;
+    }
+
+    public void saveActionPlan(Plan plan) {
+        String sql =
+                "INSERT INTO ActionPlan(planId, actionId, executionOrder, status) "
+                + "VALUES (?, ?, ?, ?)";
+        PreparedStatement ps;
+
+        try {
+            for (ActionPlan action : plan.getActionList()) {
+                ps = DatabaseManager.getConnectionInstance().prepareStatement(
+                        sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, action.getPlanId());
+                ps.setInt(2, action.getActionId());
+                ps.setInt(3, action.getExecutionOrder());
+                ps.setInt(4, ActionPlan.STATUS.TO_DO.ordinal());
+
+                DatabaseManager databaseManager = new DatabaseManager();
+
+                // This will be used to insert the configurationData
+                int actionPlanId = databaseManager.execute(ps);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("[ATMOSPHERE] Error when inserting the actionPlans in the database.", e);
+        }
     }
 }
