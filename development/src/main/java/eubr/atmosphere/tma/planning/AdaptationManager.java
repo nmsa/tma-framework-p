@@ -38,7 +38,15 @@ public class AdaptationManager {
         Plan plan = new Plan();
         plan.setValueTime(Instant.now().getEpochSecond());
 
+        plan.setMetricId(1);
+        plan.setQualityModelId(1);
+        plan.setStatus(Plan.STATUS.TO_DO);
+
         PlanManager planManager = new PlanManager();
         planManager.saveNewPlan(plan);
+    }
+
+    public static void testPlanCreation() {
+        createPlan();
     }
 }

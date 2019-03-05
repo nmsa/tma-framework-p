@@ -16,16 +16,15 @@ public class PlanManager {
 
     public int saveNewPlan(Plan plan) {
         String sql =
-                "INSERT INTO Plan(metricId, valueTime, qualityModelId, status) VALUES (?, ?, ?, ?)";
+                "INSERT INTO Plan(metricId, qualityModelId, status) VALUES (?, ?, ?)";
         PreparedStatement ps;
 
         try {
             ps = DatabaseManager.getConnectionInstance().prepareStatement(
                     sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, plan.getMetricId());
-            ps.setLong(2, plan.getValueTime());
-            ps.setInt(3, plan.getQualityModelId());
-            ps.setInt(4, plan.getStatus().ordinal());
+            ps.setInt(2, plan.getQualityModelId());
+            ps.setInt(3, plan.getStatus().ordinal());
 
             DatabaseManager databaseManager = new DatabaseManager();
             return databaseManager.execute(ps);
