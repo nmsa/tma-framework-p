@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 
 import eubr.atmosphere.tma.data.Action;
 import eubr.atmosphere.tma.planning.database.ActionPlan;
+import eubr.atmosphere.tma.planning.database.ConfigurationData;
 import eubr.atmosphere.tma.planning.database.Plan;
 import eubr.atmosphere.tma.planning.database.PlanManager;
 
@@ -54,12 +55,10 @@ public class AdaptationManager {
     public static void testPlanCreation() {
         Plan plan = createPlan();
 
-        /* Action action = new Action("scale", 9, 5);
-        action.addConfiguration(new Configuration("metadata.namespace", "default"));
-        action.addConfiguration(new Configuration("metadata.name", "wildfly"));
-        action.addConfiguration(new Configuration("spec.replicas", "3")); */
-
-        ActionPlan actionPlan = new ActionPlan(plan.getPlanId(), 1, 1);
+        ActionPlan actionPlan = new ActionPlan(plan.getPlanId(), 1, 1); // actionId: 1 ("scale")
+        actionPlan.addConfiguration(new ConfigurationData(1, "default")); // configurationId: 1 ("metadata.namespace")
+        actionPlan.addConfiguration(new ConfigurationData(2, "wildfly")); // configurationId: 2 ("metadata.name")
+        actionPlan.addConfiguration(new ConfigurationData(3, "3")); // configurationId: 3 ("spec.replicas")
 
         plan.addAction(actionPlan);
         planManager.saveActionPlan(plan);

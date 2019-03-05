@@ -1,5 +1,7 @@
 package eubr.atmosphere.tma.planning.database;
 
+import java.util.List;
+
 public class ActionPlan {
     
     public ActionPlan(int planId, int actionId, int executionOrder) {
@@ -29,6 +31,7 @@ public class ActionPlan {
     private int actionId;
     private int executionOrder;
     private STATUS status;
+    private List<ConfigurationData> configurationList;
 
     public int getPlanId() {
         return planId;
@@ -60,5 +63,13 @@ public class ActionPlan {
 
     public void setStatus(STATUS status) {
         this.status = status;
+    }
+
+    public List<ConfigurationData> getConfigurationList() {
+        return configurationList;
+    }
+
+    public void addConfiguration(ConfigurationData configuration) {
+        this.configurationList.add(configuration);
     }
 }

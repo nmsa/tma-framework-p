@@ -2,6 +2,7 @@ package eubr.atmosphere.tma.planning.database;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ public class PlanManager {
         PreparedStatement ps;
 
         try {
+            DatabaseManager databaseManager = new DatabaseManager();
             for (ActionPlan action : plan.getActionList()) {
                 ps = DatabaseManager.getConnectionInstance().prepareStatement(
                         sql, Statement.RETURN_GENERATED_KEYS);
@@ -49,13 +51,34 @@ public class PlanManager {
                 ps.setInt(3, action.getExecutionOrder());
                 ps.setInt(4, ActionPlan.STATUS.TO_DO.ordinal());
 
-                DatabaseManager databaseManager = new DatabaseManager();
-
                 // This will be used to insert the configurationData
                 int actionPlanId = databaseManager.execute(ps);
+                saveConfigurationData(actionPlanId, action.getConfigurationList());
             }
         } catch (SQLException e) {
             LOGGER.error("[ATMOSPHERE] Error when inserting the actionPlans in the database.", e);
+        }
+    }
+
+    private void saveConfigurationData(int actionPlanId, List<ConfigurationData> configurationList) {
+        String sql =
+                "INSERT INTO ConfigurationData(actionPlanId, configurationId, value) "
+                + "VALUES (?, ?, ?)";
+        PreparedStatement ps;
+
+        try {
+            DatabaseManager databaseManager = new DatabaseManager();
+            for (ConfigurationData configuration: configurationList) {
+                ps = DatabaseManager.getConnectionInstance().prepareStatement(
+                        sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, actionPlanId);
+                ps.setInt(2, configuration.getConfigurationId());
+                ps.setString(3, configuration.getValue());
+
+                databaseManager.execute(ps);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("[ATMOSPHERE] Error when inserting the configurationData in the database.", e);
         }
     }
 }
