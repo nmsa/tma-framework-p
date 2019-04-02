@@ -18,9 +18,9 @@ rule "Score validation - Wildfly Scale up"
         $score: TrustworthinessScore ( resourceConsumptionScore.score > 0.0800, podCount < 3 )
     then
         Action action = new Action("scale", 9, 5);
-        action.addConfiguration(new Configuration("metadata.namespace", "default"));
-        action.addConfiguration(new Configuration("metadata.name", "wildfly"));
-        action.addConfiguration(new Configuration("spec.replicas", "3"));
+        action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
+        action.addConfiguration(new Configuration(2, "metadata.name", "wildfly"));
+        action.addConfiguration(new Configuration(3, "spec.replicas", "3"));
         AdaptationManager.performAdaptation( action );
 end
 
@@ -29,8 +29,8 @@ rule "Score validation - Wildfly Scale down"
         $score: TrustworthinessScore ( resourceConsumptionScore.score < 0.0240, podCount > 1 )
     then
         Action action = new Action("scale", 9, 5);
-        action.addConfiguration(new Configuration("metadata.namespace", "default"));
-        action.addConfiguration(new Configuration("metadata.name", "wildfly"));
-        action.addConfiguration(new Configuration("spec.replicas", "1"));
+        action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
+        action.addConfiguration(new Configuration(2, "metadata.name", "wildfly"));
+        action.addConfiguration(new Configuration(3, "spec.replicas", "1"));
         AdaptationManager.performAdaptation( action );
 end

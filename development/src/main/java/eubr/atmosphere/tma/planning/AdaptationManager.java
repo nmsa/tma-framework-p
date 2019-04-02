@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import eubr.atmosphere.tma.data.Action;
+import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.planning.database.ActionPlan;
 import eubr.atmosphere.tma.planning.database.ConfigurationData;
 import eubr.atmosphere.tma.planning.database.Plan;
@@ -24,10 +25,11 @@ public class AdaptationManager {
         LOGGER.info("Adaptation will be performed!");
 
         Plan plan = createPlan();
-        // plan.addAction(action); // TO BE DEFINED!
+        addActionPlan(plan, action);
         planManager.saveActionPlan(plan);
 
-        JsonElement jsonElement = new Gson().toJsonTree(action);
+        JsonElement jsonElement = new Gson().toJsonTree(plan);
+        jsonElement = new Gson().toJsonTree(action);
         KafkaManager kafkaManager = new KafkaManager();
         try {
             // TODO: this will need to change, to add only the planId
@@ -37,6 +39,19 @@ public class AdaptationManager {
         } catch (ExecutionException e) {
             LOGGER.warn(e.getMessage(), e);
         }
+    }
+
+    private static void addActionPlan(Plan plan, Action action) {
+        // TODO: when we change to more than one action, the execution order needs to be specified
+        int executionOrder = 1;
+        int ACTION_ID = 1; // TODO THIS STILL NEEDS TO BE CHANGED!
+        ActionPlan actionPlan = new ActionPlan(plan.getPlanId(), ACTION_ID, executionOrder); // actionId: 1 ("scale")
+
+        for (Configuration config: action.getConfigurationList()) {
+            actionPlan.addConfiguration(new ConfigurationData(config.getConfigurationId(), config.getValue()));
+        }
+
+        plan.addAction(actionPlan);
     }
 
     private static Plan createPlan() {
