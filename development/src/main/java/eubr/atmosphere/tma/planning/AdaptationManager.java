@@ -11,9 +11,9 @@ import com.google.gson.JsonElement;
 
 import eubr.atmosphere.tma.data.Action;
 import eubr.atmosphere.tma.data.Configuration;
-import eubr.atmosphere.tma.planning.database.ActionPlan;
-import eubr.atmosphere.tma.planning.database.ConfigurationData;
-import eubr.atmosphere.tma.planning.database.Plan;
+import eubr.atmosphere.tma.data.ActionPlan;
+import eubr.atmosphere.tma.data.ConfigurationData;
+import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.planning.database.PlanManager;
 
 public class AdaptationManager {
@@ -29,7 +29,6 @@ public class AdaptationManager {
         planManager.saveActionPlan(plan);
 
         JsonElement jsonElement = new Gson().toJsonTree(plan);
-        jsonElement = new Gson().toJsonTree(action);
         KafkaManager kafkaManager = new KafkaManager();
         try {
             // TODO: this will need to change, to add only the planId

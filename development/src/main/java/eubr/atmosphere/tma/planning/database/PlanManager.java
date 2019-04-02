@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import com.mysql.jdbc.Statement;
 
+import eubr.atmosphere.tma.data.ActionPlan;
+import eubr.atmosphere.tma.data.ConfigurationData;
+import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.utils.DatabaseManager;
 
 public class PlanManager {
