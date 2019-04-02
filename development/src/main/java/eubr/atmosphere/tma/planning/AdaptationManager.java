@@ -44,8 +44,7 @@ public class AdaptationManager {
     private static void addActionPlan(Plan plan, Action action) {
         // TODO: when we change to more than one action, the execution order needs to be specified
         int executionOrder = 1;
-        int ACTION_ID = 1; // TODO THIS STILL NEEDS TO BE CHANGED!
-        ActionPlan actionPlan = new ActionPlan(plan.getPlanId(), ACTION_ID, executionOrder); // actionId: 1 ("scale")
+        ActionPlan actionPlan = new ActionPlan(plan.getPlanId(), action.getActionId(), executionOrder);
 
         for (Configuration config: action.getConfigurationList()) {
             actionPlan.addConfiguration(new ConfigurationData(config.getConfigurationId(), config.getValue()));
