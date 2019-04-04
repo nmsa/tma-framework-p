@@ -28,11 +28,10 @@ public class AdaptationManager {
         addActionPlan(plan, action);
         planManager.saveActionPlan(plan);
 
-        JsonElement jsonElement = new Gson().toJsonTree(plan);
         KafkaManager kafkaManager = new KafkaManager();
         try {
             // TODO: this will need to change, to add only the planId
-            kafkaManager.addItemKafka(jsonElement.toString());
+            kafkaManager.addItemKafka(plan.getPlanId().toString());
         } catch (InterruptedException e) {
             LOGGER.warn(e.getMessage(), e);
         } catch (ExecutionException e) {
