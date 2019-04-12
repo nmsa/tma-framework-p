@@ -29,7 +29,6 @@ public class Main
     private static List<FactHandle> factHandleList = new ArrayList<>();
 
     public static void main( String[] args ) {
-        AdaptationManager.testPlanCreation();
         final KieSession ksession = initSession();
         runConsumer(ksession);
     }

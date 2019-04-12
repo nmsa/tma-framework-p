@@ -30,7 +30,6 @@ public class AdaptationManager {
 
         KafkaManager kafkaManager = new KafkaManager();
         try {
-            // TODO: this will need to change, to add only the planId
             kafkaManager.addItemKafka(plan.getPlanId().toString());
         } catch (InterruptedException e) {
             LOGGER.warn(e.getMessage(), e);
@@ -62,17 +61,5 @@ public class AdaptationManager {
         int planId = planManager.saveNewPlan(plan);
         plan.setPlanId(planId);
         return plan;
-    }
-
-    public static void testPlanCreation() {
-        Plan plan = createPlan();
-
-        ActionPlan actionPlan = new ActionPlan(plan.getPlanId(), 1, 1); // actionId: 1 ("scale")
-        actionPlan.addConfiguration(new ConfigurationData(1, "default")); // configurationId: 1 ("metadata.namespace")
-        actionPlan.addConfiguration(new ConfigurationData(2, "wildfly")); // configurationId: 2 ("metadata.name")
-        actionPlan.addConfiguration(new ConfigurationData(3, "3")); // configurationId: 3 ("spec.replicas")
-
-        plan.addAction(actionPlan);
-        planManager.saveActionPlan(plan);
     }
 }
