@@ -5,9 +5,9 @@ dialect "mvel"
 import eubr.atmosphere.tma.planning.AdaptationManager
 import eubr.atmosphere.tma.data.Action
 import eubr.atmosphere.tma.data.Configuration
-import eubr.atmosphere.tma.utils.Score
+import eubr.atmosphere.tma.utils.TrustworthinessScore
 
-declare Score
+declare TrustworthinessScore
       @role(event)
       @expires(1s)
       //@timestamp (eventDestinationTimestamp)
@@ -15,33 +15,22 @@ declare Score
 
 rule "Score validation - Wildfly Scale up"
     when
-        $score: Score ( score > 0.0800, podCount < 3 )
+        $score: TrustworthinessScore ( resourceConsumptionScore.score > 0.0800, podCount < 3 )
     then
-        Action action = new Action("scale", 9, 5);
-        action.addConfiguration(new Configuration("metadata.namespace", "default"));
-        action.addConfiguration(new Configuration("metadata.name", "wildfly"));
-        action.addConfiguration(new Configuration("spec.replicas", "3"));
+        Action action = new Action(1, "scale", 9, 5);
+        action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
+        action.addConfiguration(new Configuration(2, "metadata.name", "wildfly"));
+        action.addConfiguration(new Configuration(3, "spec.replicas", "3"));
         AdaptationManager.performAdaptation( action );
 end
 
 rule "Score validation - Wildfly Scale down"
     when
-        $score: Score ( score < 0.0240, podCount > 1 )
+        $score: TrustworthinessScore ( resourceConsumptionScore.score < 0.0240, podCount > 1 )
     then
-        Action action = new Action("scale", 9, 5);
-        action.addConfiguration(new Configuration("metadata.namespace", "default"));
-        action.addConfiguration(new Configuration("metadata.name", "wildfly"));
-        action.addConfiguration(new Configuration("spec.replicas", "1"));
+        Action action = new Action(1, "scale", 9, 5);
+        action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
+        action.addConfiguration(new Configuration(2, "metadata.name", "wildfly"));
+        action.addConfiguration(new Configuration(3, "spec.replicas", "1"));
         AdaptationManager.performAdaptation( action );
 end
-
-/*rule "Score validation average"
-    when
-        Number( avg : doubleValue > 0.35 ) from accumulate(
-		Score( $my_score : score ) over window:length( 5 ),
-		average ( $my_score ) )
-    then
-        System.out.println(avg);
-        Action action = new Action("[Score B] Average-high ", 8);
-        AdaptationManager.performAdaptation( action );
-end*/

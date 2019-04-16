@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import eubr.atmosphere.tma.planning.utils.PropertiesManager;
-import eubr.atmosphere.tma.utils.Score;
+import eubr.atmosphere.tma.utils.TrustworthinessScore;
 
 public class Main 
 {
@@ -78,7 +78,7 @@ public class Main
 
     private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
         String stringJsonScore = record.value();
-        Score score = new Gson().fromJson(stringJsonScore, Score.class);
+        TrustworthinessScore score = new Gson().fromJson(stringJsonScore, TrustworthinessScore.class);
         LOGGER.info(record.toString());
         LOGGER.info("Score: {} / Offset: {}", score.getScore(), record.offset());
         factHandleList.add(ksession.insert(score));
