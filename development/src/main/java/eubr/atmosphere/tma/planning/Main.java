@@ -100,7 +100,7 @@ public class Main
 
     private static KieSession initSession() {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( ResourceFactory.newClassPathResource( "Rules.drl",
+        kbuilder.add( ResourceFactory.newClassPathResource( "TeaStore.drl",
                                                             Main.class ),
                                                             ResourceType.DRL );
 
