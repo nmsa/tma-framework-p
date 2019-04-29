@@ -15,20 +15,22 @@ declare TrustworthinessScore
 
 rule "Score validation - TeaStore Scale up"
     when
-        $score: TrustworthinessScore ( resourceConsumptionScore.score > 0.0800, podCount < 3 )
+        $score: TrustworthinessScore ( resourceConsumptionScore.score > 0.1400, podCount < 3 )
     then
-        Action action = new Action(1, "scale", 9, 5);
+	System.out.println("TeaStore Scale up");
+        Action action = new Action(1, "scale", 15, 5);
         action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
         action.addConfiguration(new Configuration(2, "metadata.name", "teastore-webui"));
         action.addConfiguration(new Configuration(3, "spec.replicas", "3"));
         AdaptationManager.performAdaptation( action );
 end
 
-rule "Score validation - Wildfly Scale down"
+rule "Score validation - TeaStore Scale down"
     when
-        $score: TrustworthinessScore ( resourceConsumptionScore.score < 0.0240, podCount > 1 )
+        $score: TrustworthinessScore ( resourceConsumptionScore.score < 0.1000, podCount > 1 )
     then
-        Action action = new Action(1, "scale", 9, 5);
+	System.out.println("TeaStore Scale down");
+        Action action = new Action(1, "scale", 15, 5);
         action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
         action.addConfiguration(new Configuration(2, "metadata.name", "teastore-webui"));
         action.addConfiguration(new Configuration(3, "spec.replicas", "1"));
