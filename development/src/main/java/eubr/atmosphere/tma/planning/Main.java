@@ -28,6 +28,11 @@ public class Main
 
     private static List<FactHandle> factHandleList = new ArrayList<>();
 
+    private static final String RULES_FILE = "TeaStoreResConsumptionQM.drl";
+    // "WSVDResConsumptionQM.drl";
+    // "WSVDPerformanceQM.drl";
+    // "TeaStorePerformanceQM.drl";
+
     public static void main( String[] args ) {
         final KieSession ksession = initSession();
         runConsumer(ksession);
@@ -100,7 +105,7 @@ public class Main
 
     private static KieSession initSession() {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( ResourceFactory.newClassPathResource( "TeaStore.drl",
+        kbuilder.add( ResourceFactory.newClassPathResource( RULES_FILE,
                                                             Main.class ),
                                                             ResourceType.DRL );
 
