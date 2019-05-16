@@ -28,9 +28,9 @@ public class Main
 
     private static List<FactHandle> factHandleList = new ArrayList<>();
 
-    private static final String RULES_FILE = "TeaStoreResConsumptionQM.drl";
-    // "WSVDResConsumptionQM.drl";
+    private static final String RULES_FILE = "WSVDResConsumptionQM.drl";
     // "WSVDPerformanceQM.drl";
+    // "TeaStoreResConsumptionQM.drl";
     // "TeaStorePerformanceQM.drl";
 
     public static void main( String[] args ) {

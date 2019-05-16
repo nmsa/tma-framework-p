@@ -15,13 +15,13 @@ declare TrustworthinessScore
 
 rule "Performance Score validation - TeaStore Scale up"
     when
-        $score: TrustworthinessScore ( performanceScore.score > 0.1400, podCount < 3 )
+        $score: TrustworthinessScore ( performanceScore.score > 0.1400, podCount < 2 )
     then
 	System.out.println("TeaStore Scale up");
         Action action = new Action(1, "scale", 15, 5);
         action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
         action.addConfiguration(new Configuration(2, "metadata.name", "teastore-webui"));
-        action.addConfiguration(new Configuration(3, "spec.replicas", "3"));
+        action.addConfiguration(new Configuration(3, "spec.replicas", "2"));
         AdaptationManager.performAdaptation( action );
 end
 

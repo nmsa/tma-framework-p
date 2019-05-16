@@ -15,12 +15,12 @@ declare TrustworthinessScore
 
 rule "Score validation - Wildfly Scale up"
     when
-        $score: TrustworthinessScore ( resourceConsumptionScore.score > 0.0800, podCount < 3 )
+        $score: TrustworthinessScore ( resourceConsumptionScore.score > 0.0800, podCount < 2 )
     then
         Action action = new Action(1, "scale", 9, 5);
         action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
         action.addConfiguration(new Configuration(2, "metadata.name", "wildfly"));
-        action.addConfiguration(new Configuration(3, "spec.replicas", "3"));
+        action.addConfiguration(new Configuration(3, "spec.replicas", "2"));
         AdaptationManager.performAdaptation( action );
 end
 
