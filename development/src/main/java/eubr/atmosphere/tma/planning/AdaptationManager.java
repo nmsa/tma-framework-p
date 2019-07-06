@@ -6,21 +6,55 @@ import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
 import eubr.atmosphere.tma.data.Action;
-import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ActionPlan;
+import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ConfigurationData;
 import eubr.atmosphere.tma.data.Plan;
+import eubr.atmosphere.tma.planning.database.ConfigRulesManager;
 import eubr.atmosphere.tma.planning.database.PlanManager;
+import eubr.atmosphere.tma.utils.PrivacyScore;
 
 public class AdaptationManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdaptationManager.class);
     private static PlanManager planManager = new PlanManager();
+    private static ConfigRulesManager configRulesManager = new ConfigRulesManager();
 
+    public static void increasePRIVAASAnonymization(PrivacyScore privacyScore) {
+    	if (privacyScore != null) {
+    		KafkaManager kafkaManager = new KafkaManager();
+			try {
+				Double kValue = configRulesManager.searchKAnonimityByID(privacyScore.getTimestamp());
+				if (kValue != null) {
+					kValue = kValue + 1;
+					privacyScore.setK(kValue);
+					kafkaManager.addItemKafka(privacyScore);
+				}
+			} catch (InterruptedException e) {
+				LOGGER.warn(e.getMessage(), e);
+			} catch (ExecutionException e) {
+				LOGGER.warn(e.getMessage(), e);
+			}
+    	}
+    }
+    
+    public static void noIncreasePRIVAASAnonymization(PrivacyScore privacyScore) {
+    	KafkaManager kafkaManager = new KafkaManager();
+        try {
+        	
+			Double kValue = configRulesManager
+					.searchKAnonimityByID(privacyScore.getTimestamp());
+        	privacyScore.setK(kValue);
+        	
+            kafkaManager.addItemKafka(privacyScore);
+        } catch (InterruptedException e) {
+            LOGGER.warn(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
+    
     public static void performAdaptation(Action action) {
         LOGGER.info("Adaptation will be performed!");
 

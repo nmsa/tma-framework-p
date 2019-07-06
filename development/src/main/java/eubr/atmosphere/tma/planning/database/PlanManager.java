@@ -2,12 +2,11 @@ package eubr.atmosphere.tma.planning.database;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.mysql.jdbc.Statement;
 
 import eubr.atmosphere.tma.data.ActionPlan;
 import eubr.atmosphere.tma.data.ConfigurationData;

@@ -11,7 +11,11 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import eubr.atmosphere.tma.planning.utils.PropertiesManager;
+import eubr.atmosphere.tma.utils.PrivacyScore;
 
 public class KafkaManager {
 
@@ -29,6 +33,20 @@ public class KafkaManager {
         long elapsedTime = System.currentTimeMillis() - time;
         System.out.printf("sent record(key=%s value=%s) " +
                         "meta(partition=%d, offset=%d) time=%d %n",
+                record.key(), record.value(), metadata.partition(),
+                metadata.offset(), elapsedTime);
+        producer.flush();
+    }
+    
+    public void addItemKafka(PrivacyScore privacyScore) throws InterruptedException, ExecutionException {
+        long time = System.currentTimeMillis();
+        JsonElement jsonElement = new Gson().toJsonTree(privacyScore);
+        final ProducerRecord<Long, String> record =
+                new ProducerRecord<>(TOPIC, time, jsonElement.toString());
+        RecordMetadata metadata = producer.send(record).get();
+        long elapsedTime = System.currentTimeMillis() - time;
+        System.out.printf("sent record(key=%s value=%s) " +
+                        "meta(partition=%d, offset=%d) time=%d\n",
                 record.key(), record.value(), metadata.partition(),
                 metadata.offset(), elapsedTime);
         producer.flush();
