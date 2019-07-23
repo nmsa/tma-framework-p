@@ -10,26 +10,40 @@ import eubr.atmosphere.tma.data.Action;
 import eubr.atmosphere.tma.data.ActionPlan;
 import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ConfigurationData;
+import eubr.atmosphere.tma.data.EnumAction;
 import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.planning.database.ConfigRulesManager;
 import eubr.atmosphere.tma.planning.database.PlanManager;
+import eubr.atmosphere.tma.planning.kafka.KafkaManager;
+import eubr.atmosphere.tma.planning.utils.PropertiesManager;
+import eubr.atmosphere.tma.utils.MessageExecute;
 import eubr.atmosphere.tma.utils.PrivacyScore;
 
 public class AdaptationManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdaptationManager.class);
+    
     private static PlanManager planManager = new PlanManager();
     private static ConfigRulesManager configRulesManager = new ConfigRulesManager();
 
-    public static void increasePRIVAASAnonymization(PrivacyScore privacyScore) {
-    	if (privacyScore != null) {
+    public static void increasePRIVAASAnonymization(PrivacyScore configuration) {
+    	if (configuration != null) {
     		KafkaManager kafkaManager = new KafkaManager();
 			try {
-				Double kValue = configRulesManager.searchKAnonimityByID(privacyScore.getTimestamp());
+				
+				Double kValue = configRulesManager.searchKAnonimityByID(configuration.getTimestamp());
+				
 				if (kValue != null) {
+					
 					kValue = kValue + 1;
-					privacyScore.setK(kValue);
-					kafkaManager.addItemKafka(privacyScore);
+					configuration.setK(kValue);
+					
+					Integer resourceId = Integer.parseInt(PropertiesManager.getInstance().getProperty("resource.id"));
+
+					MessageExecute messageExecute = new MessageExecute(resourceId, EnumAction.UPDATE.name(), 1,
+							configuration);
+					
+					kafkaManager.addItemKafka(messageExecute);
 				}
 			} catch (InterruptedException e) {
 				LOGGER.warn(e.getMessage(), e);
@@ -39,15 +53,19 @@ public class AdaptationManager {
     	}
     }
     
-    public static void noIncreasePRIVAASAnonymization(PrivacyScore privacyScore) {
+    public static void noIncreasePRIVAASAnonymization(PrivacyScore configuration) {
     	KafkaManager kafkaManager = new KafkaManager();
         try {
         	
 			Double kValue = configRulesManager
-					.searchKAnonimityByID(privacyScore.getTimestamp());
-        	privacyScore.setK(kValue);
+					.searchKAnonimityByID(configuration.getTimestamp());
+        	configuration.setK(kValue);
         	
-            kafkaManager.addItemKafka(privacyScore);
+			Integer resourceId = Integer.parseInt(PropertiesManager.getInstance().getProperty("resource.id"));
+
+			MessageExecute messageExecute = new MessageExecute(resourceId, EnumAction.NONE.name(), 1, configuration);
+        	
+            kafkaManager.addItemKafka(messageExecute);
         } catch (InterruptedException e) {
             LOGGER.warn(e.getMessage(), e);
         } catch (ExecutionException e) {

@@ -15,14 +15,14 @@ declare TrustworthinessScore
 
 rule "Privacy Score Validation - Increase PRIVAAS Anonymization"
     when
-        $score: PrivacyScore ( score > threshold )
+        $score: PrivacyScore ( score < threshold )
     then
         AdaptationManager.increasePRIVAASAnonymization( $score );
 end
 
 rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
     when
-        $score: PrivacyScore ( score <= threshold )
+        $score: PrivacyScore ( score >= threshold )
     then
         AdaptationManager.noIncreasePRIVAASAnonymization( $score );
 end

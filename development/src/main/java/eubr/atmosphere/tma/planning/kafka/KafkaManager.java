@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.planning;
+package eubr.atmosphere.tma.planning.kafka;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -15,7 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import eubr.atmosphere.tma.planning.utils.PropertiesManager;
-import eubr.atmosphere.tma.utils.PrivacyScore;
+import eubr.atmosphere.tma.utils.MessageExecute;
 
 public class KafkaManager {
 
@@ -38,9 +38,9 @@ public class KafkaManager {
         producer.flush();
     }
     
-    public void addItemKafka(PrivacyScore privacyScore) throws InterruptedException, ExecutionException {
+    public void addItemKafka(MessageExecute messageExecute) throws InterruptedException, ExecutionException {
         long time = System.currentTimeMillis();
-        JsonElement jsonElement = new Gson().toJsonTree(privacyScore);
+        JsonElement jsonElement = new Gson().toJsonTree(messageExecute);
         final ProducerRecord<Long, String> record =
                 new ProducerRecord<>(TOPIC, time, jsonElement.toString());
         RecordMetadata metadata = producer.send(record).get();

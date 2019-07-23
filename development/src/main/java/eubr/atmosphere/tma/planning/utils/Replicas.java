@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.planning;
+package eubr.atmosphere.tma.planning.utils;
 
 public class Replicas {
 
