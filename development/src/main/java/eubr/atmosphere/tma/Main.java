@@ -125,12 +125,12 @@ public class Main {
     	
     	LOGGER.info(record.toString());
         String stringJsonScore = record.value();
-        TrustworthinessScore trustworthinessScore = new Gson().fromJson(stringJsonScore, TrustworthinessScore.class);
+        PrivacyScore privacyScore = new Gson().fromJson(stringJsonScore, PrivacyScore.class);
 		
-        if (trustworthinessScore != null && trustworthinessScore.getPrivacyScore() != null
-				&& trustworthinessScore.getPrivacyScore().getScore() != null) {
+//        if (trustworthinessScore != null && trustworthinessScore.getPrivacyScore() != null
+//				&& trustworthinessScore.getPrivacyScore().getScore() != null) {
 			
-        	PrivacyScore privacyScore = trustworthinessScore.getPrivacyScore();
+        	//privacyScore privacyScore = trustworthinessScore.getPrivacyScore();
 			LOGGER.info("Score: {} / Offset: {}", privacyScore.getScore(), record.offset());
 			
 			Double threshold = null;
@@ -144,10 +144,10 @@ public class Main {
 			
 			factHandleList.add(ksession.insert(privacyScore));
 			
-		} else {
-			String msgWarn = "Privacy score not initialized."; 
-			LOGGER.warn(msgWarn);
-		}
+//		} else {
+//			String msgWarn = "Privacy score not initialized."; 
+//			LOGGER.warn(msgWarn);
+//		}
     }
     
     /**
