@@ -12,6 +12,7 @@ import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ConfigurationData;
 import eubr.atmosphere.tma.data.EnumAction;
 import eubr.atmosphere.tma.data.Plan;
+import eubr.atmosphere.tma.data.PlanStatus;
 import eubr.atmosphere.tma.planning.database.ConfigRulesManager;
 import eubr.atmosphere.tma.planning.database.PlanManager;
 import eubr.atmosphere.tma.planning.kafka.KafkaManager;
@@ -44,6 +45,16 @@ public class AdaptationManager {
 							configuration);
 					
 					kafkaManager.addItemKafka(messageExecute);
+					
+					Plan plan = null;
+					if ( configuration.getPlanId() == null ) {
+						plan = buildInitialPlan();
+					} else {
+						plan = planManager.searchPlan(configuration.getPlanId());
+					}
+
+					// TODO: continue
+					
 				}
 			} catch (InterruptedException e) {
 				LOGGER.warn(e.getMessage(), e);
@@ -72,6 +83,29 @@ public class AdaptationManager {
             LOGGER.warn(e.getMessage(), e);
         }
     }
+    
+    private static Plan buildInitialPlan() {
+        Plan plan = new Plan();
+        plan.setValueTime(Instant.now().getEpochSecond());
+
+        //plan.setMetricId(1);   // metric is related with action (remove it)
+        //plan.setQualityModelId(1);
+        plan.setStatus(PlanStatus.TO_DO);
+
+        int planId = planManager.saveNewPlan(plan);
+        plan.setPlanId(planId);
+        
+        return plan;
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
     
     public static void performAdaptation(Action action) {
         LOGGER.info("Adaptation will be performed!");
@@ -108,7 +142,7 @@ public class AdaptationManager {
 
         plan.setMetricId(1);
         plan.setQualityModelId(1);
-        plan.setStatus(Plan.STATUS.TO_DO);
+        plan.setStatus(PlanStatus.TO_DO);
 
         int planId = planManager.saveNewPlan(plan);
         plan.setPlanId(planId);
