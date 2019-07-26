@@ -10,7 +10,6 @@ import eubr.atmosphere.tma.data.Action;
 import eubr.atmosphere.tma.data.ActionPlan;
 import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ConfigurationData;
-import eubr.atmosphere.tma.data.EnumAction;
 import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.data.PlanStatus;
 import eubr.atmosphere.tma.planning.database.ConfigRulesManager;
@@ -27,34 +26,32 @@ public class AdaptationManager {
     private static PlanManager planManager = new PlanManager();
     private static ConfigRulesManager configRulesManager = new ConfigRulesManager();
 
-    public static void increasePRIVAASAnonymization(PrivacyScore configuration) {
-    	if (configuration != null) {
+    public static void increasePRIVAASAnonymization(PrivacyScore privacyScore) {
+    	if (privacyScore != null) {
     		KafkaManager kafkaManager = new KafkaManager();
 			try {
-				
-				Double kValue = configRulesManager.searchKAnonimityByID(configuration.getTimestamp());
-				
+				Double kValue = configRulesManager.searchKAnonimityByID(privacyScore.getTimestamp());
 				if (kValue != null) {
-					
 					kValue = kValue + 1;
-					configuration.setK(kValue);
+					privacyScore.setK(kValue);
 					
 					Integer resourceId = Integer.parseInt(PropertiesManager.getInstance().getProperty("resource.id"));
+					
+					Plan plan = getPlanById(privacyScore.getPlanId());
+					plan.setMetricId(privacyScore.getAttributeId());
+					plan.setQualityModelId(privacyScore.getConfigurationProfileId());
+					plan.setStatus(PlanStatus.IN_PROGRESS);
+					
+					Action action = new Action(1, "Increase anonymization", resourceId, 1);
+					action.addConfiguration(new Configuration(1, "k", privacyScore.getK().toString()));
+					
+					addActionPlan(plan, action);
+					planManager.saveActionPlan(plan);
 
-					MessageExecute messageExecute = new MessageExecute(resourceId, EnumAction.UPDATE.name(), 1,
-							configuration);
+					MessageExecute messageExecute = new MessageExecute(action.getAction(), resourceId, 1, plan.getValueTime(),
+							action.getConfigurationList());
 					
-					kafkaManager.addItemKafka(messageExecute);
-					
-					Plan plan = null;
-					if ( configuration.getPlanId() == null ) {
-						plan = buildInitialPlan();
-					} else {
-						plan = planManager.searchPlan(configuration.getPlanId());
-					}
-
-					// TODO: continue
-					
+			        kafkaManager.addItemKafka(messageExecute);
 				}
 			} catch (InterruptedException e) {
 				LOGGER.warn(e.getMessage(), e);
@@ -64,32 +61,50 @@ public class AdaptationManager {
     	}
     }
     
-    public static void noIncreasePRIVAASAnonymization(PrivacyScore configuration) {
+    public static void noIncreasePRIVAASAnonymization(PrivacyScore privacyScore) {
     	KafkaManager kafkaManager = new KafkaManager();
         try {
-        	
 			Double kValue = configRulesManager
-					.searchKAnonimityByID(configuration.getTimestamp());
-        	configuration.setK(kValue);
+					.searchKAnonimityByID(privacyScore.getTimestamp());
+        	privacyScore.setK(kValue);
         	
 			Integer resourceId = Integer.parseInt(PropertiesManager.getInstance().getProperty("resource.id"));
 
-			MessageExecute messageExecute = new MessageExecute(resourceId, EnumAction.NONE.name(), 1, configuration);
-        	
-            kafkaManager.addItemKafka(messageExecute);
+			Plan plan = getPlanById(privacyScore.getPlanId());
+			plan.setMetricId(privacyScore.getAttributeId());
+			plan.setQualityModelId(privacyScore.getConfigurationProfileId());
+			plan.setStatus(PlanStatus.COMPLETED);
+			
+			Action action = new Action(1, "No increase anonymization", resourceId, 1);
+			action.addConfiguration(new Configuration(1, "k", privacyScore.getK().toString()));
+			
+			addActionPlan(plan, action);
+			planManager.saveActionPlan(plan);
+
+			MessageExecute messageExecute = new MessageExecute(action.getAction(), resourceId, 1, plan.getValueTime(),
+					action.getConfigurationList());
+			
+	        kafkaManager.addItemKafka(messageExecute);
         } catch (InterruptedException e) {
             LOGGER.warn(e.getMessage(), e);
         } catch (ExecutionException e) {
             LOGGER.warn(e.getMessage(), e);
         }
     }
+   
+    private static Plan getPlanById(Integer planId) {
+    	Plan plan = null;
+		if ( planId == null ) {
+			plan = buildInitialPlan();
+		} else {
+			plan = planManager.searchPlan(planId);
+		}
+		return plan;
+    }
     
     private static Plan buildInitialPlan() {
         Plan plan = new Plan();
-        plan.setValueTime(Instant.now().getEpochSecond());
-
-        //plan.setMetricId(1);   // metric is related with action (remove it)
-        //plan.setQualityModelId(1);
+        //plan.setValueTime(Instant.now().getEpochSecond());
         plan.setStatus(PlanStatus.TO_DO);
 
         int planId = planManager.saveNewPlan(plan);
@@ -97,11 +112,6 @@ public class AdaptationManager {
         
         return plan;
     }
-
-    
-    
-    
-    
     
     
     

@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -49,7 +51,7 @@ public class PlanManager {
     
     public int saveNewPlan(Plan plan) {
         String sql =
-                "INSERT INTO Plan(metricId, qualityModelId, status) VALUES (?, ?, ?)";
+                "INSERT INTO Plan(metricId, qualityModelId, status, valueTime) VALUES (?, ?, ?, ?)";
         PreparedStatement ps;
 
         try {
@@ -58,7 +60,8 @@ public class PlanManager {
             ps.setInt(1, plan.getMetricId());
             ps.setInt(2, plan.getQualityModelId());
             ps.setInt(3, plan.getStatus().ordinal());
-
+            ps.setTimestamp(4, new Timestamp(new Date().getTime()));
+            
             DatabaseManager databaseManager = new DatabaseManager();
             return databaseManager.execute(ps);
         } catch (SQLException e) {
