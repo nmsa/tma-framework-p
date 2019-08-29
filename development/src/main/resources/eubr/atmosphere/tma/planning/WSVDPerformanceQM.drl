@@ -1,0 +1,36 @@
+package eubr.atmosphere.tma.planning
+ 
+dialect "mvel"
+
+import eubr.atmosphere.tma.planning.AdaptationManager
+import eubr.atmosphere.tma.data.Action
+import eubr.atmosphere.tma.data.Configuration
+import eubr.atmosphere.tma.utils.TrustworthinessScore
+
+declare TrustworthinessScore
+      @role(event)
+      @expires(1s)
+      //@timestamp (eventDestinationTimestamp)
+ end
+
+rule "Performance Score validation - Wildfly Scale up"
+    when
+        $score: TrustworthinessScore ( performanceScore.score > 0.0800, podCount < 2 )
+    then
+        Action action = new Action(1, "scale", 9, 5);
+        action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
+        action.addConfiguration(new Configuration(2, "metadata.name", "wildfly"));
+        action.addConfiguration(new Configuration(3, "spec.replicas", "2"));
+        AdaptationManager.performAdaptation( action );
+end
+
+rule "Performance Score validation - Wildfly Scale down"
+    when
+        $score: TrustworthinessScore ( performanceScore.score < 0.0240, podCount > 1 )
+    then
+        Action action = new Action(1, "scale", 9, 5);
+        action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
+        action.addConfiguration(new Configuration(2, "metadata.name", "wildfly"));
+        action.addConfiguration(new Configuration(3, "spec.replicas", "1"));
+        AdaptationManager.performAdaptation( action );
+end
