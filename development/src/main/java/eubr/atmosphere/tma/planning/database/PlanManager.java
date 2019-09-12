@@ -1,7 +1,6 @@
 package eubr.atmosphere.tma.planning.database;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -14,40 +13,11 @@ import org.slf4j.LoggerFactory;
 import eubr.atmosphere.tma.data.ActionPlan;
 import eubr.atmosphere.tma.data.ConfigurationData;
 import eubr.atmosphere.tma.data.Plan;
-import eubr.atmosphere.tma.data.PlanStatus;
 import eubr.atmosphere.tma.utils.DatabaseManager;
 
 public class PlanManager {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(PlanManager.class);
-
-    public Plan searchPlan(Integer planId) {
-    	
-    	Plan plan = null;
-    	PreparedStatement ps = null;
-		String sql = "SELECT metricId, qualityModelId, status, valueTime FROM Plan p WHERE p.planId = ?";
-		
-		try {
-			
-            ps = DatabaseManager.getConnectionInstance().prepareStatement(sql);
-            ps.setInt(1, planId);
-
-            ResultSet rs = DatabaseManager.executeQuery(ps);
-            if ( rs.next() ) {
-            	plan = new Plan();
-            	plan.setMetricId(rs.getInt("metricId"));
-            	plan.setQualityModelId(rs.getInt("qualityModelId"));
-            	plan.setStatus(PlanStatus.valueOf(rs.getInt("status")));
-            	plan.setValueTime(rs.getLong("valueTime"));
-            }
-            return plan;
-            
-        } catch (SQLException e) {
-            LOGGER.error("[ATMOSPHERE] Error when getting plan using planId.", e);
-        }
-		
-        return null;
-    }
     
     public int saveNewPlan(Plan plan) {
         String sql =

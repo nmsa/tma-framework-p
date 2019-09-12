@@ -2,7 +2,7 @@ package eubr.atmosphere.tma.planning
  
 dialect "mvel"
 
-import eubr.atmosphere.tma.planning.AdaptationManager
+import eubr.atmosphere.tma.helpers.PrivacyHelper
 import eubr.atmosphere.tma.data.Action
 import eubr.atmosphere.tma.data.Configuration
 import eubr.atmosphere.tma.utils.PrivacyScore
@@ -17,12 +17,12 @@ rule "Privacy Score Validation - Increase PRIVAAS Anonymization"
     when
         $score: PrivacyScore ( score < threshold )
     then
-        AdaptationManager.increasePRIVAASAnonymization( $score );
+        PrivacyHelper.increasePRIVAASAnonymization( $score );
 end
 
 rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
     when
         $score: PrivacyScore ( score >= threshold )
     then
-        AdaptationManager.noIncreasePRIVAASAnonymization( $score );
+        PrivacyHelper.noIncreasePRIVAASAnonymization( $score );
 end

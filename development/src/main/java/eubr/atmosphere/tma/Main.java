@@ -127,27 +127,18 @@ public class Main {
         String stringJsonScore = record.value();
         PrivacyScore privacyScore = new Gson().fromJson(stringJsonScore, PrivacyScore.class);
 		
-//        if (trustworthinessScore != null && trustworthinessScore.getPrivacyScore() != null
-//				&& trustworthinessScore.getPrivacyScore().getScore() != null) {
-			
-        	//privacyScore privacyScore = trustworthinessScore.getPrivacyScore();
-			LOGGER.info("Score: {} / Offset: {}", privacyScore.getScore(), record.offset());
-			
-			Double threshold = null;
-			if ( privacyScore.getConfigurationProfileId() != null ) {
-				threshold = configRulesManager.searchThresholdByConfigProfileID(
-						privacyScore.getConfigurationProfileId(), privacyScore.getAttributeId());
-			}
-			if ( threshold != null ) {
-				privacyScore.setThreshold(threshold);
-			}
-			
-			factHandleList.add(ksession.insert(privacyScore));
-			
-//		} else {
-//			String msgWarn = "Privacy score not initialized."; 
-//			LOGGER.warn(msgWarn);
-//		}
+		LOGGER.info("Score: {} / Offset: {}", privacyScore.getScore(), record.offset());
+		
+		Double threshold = null;
+		if ( privacyScore.getConfigurationProfileId() != null ) {
+			threshold = configRulesManager.searchThresholdByConfigProfileID(
+					privacyScore.getConfigurationProfileId(), privacyScore.getAttributeId());
+		}
+		if ( threshold != null ) {
+			privacyScore.setThreshold(threshold);
+		}
+		
+		factHandleList.add(ksession.insert(privacyScore));
     }
     
     /**
