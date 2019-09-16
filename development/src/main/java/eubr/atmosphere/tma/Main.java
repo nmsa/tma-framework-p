@@ -30,10 +30,10 @@ public class Main {
     public static void main( String[] args ) {
     	
     	//loading drools rule files
-        //final KieSession performanceKSession = initSession("Rules");
+        final KieSession performanceKSession = initSession("Rules");
         final KieSession privacyKSession = initSession("PrivacyRules");
         
-        runConsumer(null, privacyKSession);
+        runConsumer(performanceKSession, privacyKSession);
     }
     
     private static void runConsumer(KieSession performanceKSession, KieSession privacyKSession) {
