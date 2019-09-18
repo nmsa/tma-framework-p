@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.planning.kafka;
+package eubr.atmosphere.tma.planning;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -11,11 +11,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
 import eubr.atmosphere.tma.planning.utils.PropertiesManager;
-import eubr.atmosphere.tma.utils.MessageExecute;
 
 public class KafkaManager {
 
@@ -33,20 +29,6 @@ public class KafkaManager {
         long elapsedTime = System.currentTimeMillis() - time;
         System.out.printf("sent record(key=%s value=%s) " +
                         "meta(partition=%d, offset=%d) time=%d %n",
-                record.key(), record.value(), metadata.partition(),
-                metadata.offset(), elapsedTime);
-        producer.flush();
-    }
-    
-    public void addItemKafka(MessageExecute messageExecute) throws InterruptedException, ExecutionException {
-        long time = System.currentTimeMillis();
-        JsonElement jsonElement = new Gson().toJsonTree(messageExecute);
-        final ProducerRecord<Long, String> record =
-                new ProducerRecord<>(TOPIC, time, jsonElement.toString());
-        RecordMetadata metadata = producer.send(record).get();
-        long elapsedTime = System.currentTimeMillis() - time;
-        System.out.printf("sent record(key=%s value=%s) " +
-                        "meta(partition=%d, offset=%d) time=%d\n",
                 record.key(), record.value(), metadata.partition(),
                 metadata.offset(), elapsedTime);
         producer.flush();

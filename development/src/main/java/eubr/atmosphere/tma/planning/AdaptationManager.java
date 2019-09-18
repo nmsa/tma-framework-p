@@ -13,7 +13,6 @@ import eubr.atmosphere.tma.data.ConfigurationData;
 import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.data.Plan.STATUS;
 import eubr.atmosphere.tma.planning.database.PlanManager;
-import eubr.atmosphere.tma.planning.kafka.KafkaManager;
 
 public class AdaptationManager {
 

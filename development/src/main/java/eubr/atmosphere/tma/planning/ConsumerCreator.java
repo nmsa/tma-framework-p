@@ -1,4 +1,4 @@
-package eubr.atmosphere.tma.planning.kafka;
+package eubr.atmosphere.tma.planning;
 
 import java.util.Collections;
 import java.util.Properties;
