@@ -15,22 +15,22 @@ declare TrustworthinessScore
 
 rule "Privacy Score Validation - Increase PRIVAAS Anonymization"
     when
-        $score: TrustworthinessScore ( privacyScore.score < privacyScore.threshold )
+        $score: TrustworthinessScore ( score < threshold )
     then
         Action action = new Action(4, "update", 8, 35001);
-	    action.addConfiguration(new Configuration(1, "score", $score.getPrivacyScore().getScore().toString()));
-	    action.addConfiguration(new Configuration(2, "atributeID", $score.getPrivacyScore().getAttributeId().toString()));
-	    action.addConfiguration(new Configuration(3, "configProfileID", $score.getPrivacyScore().getConfigurationProfileId().toString()));
+		action.addConfiguration(new Configuration(1, "score", $score.score.toString()));
+	    action.addConfiguration(new Configuration(2, "atributeID", $score.attributeId.toString()));
+	    action.addConfiguration(new Configuration(3, "configProfileID", $score.configurationProfileId.toString()));
 	    AdaptationManager.performAdaptation( action );
 end
 
 rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
     when
-        $score: TrustworthinessScore ( privacyScore.score >= privacyScore.threshold )
+        $score: TrustworthinessScore ( score >= threshold )
     then
 		Action action = new Action(4, "none", 8, 35001);
-	    action.addConfiguration(new Configuration(1, "score", $score.getPrivacyScore().getScore().toString()));
-	    action.addConfiguration(new Configuration(2, "atributeID", $score.getPrivacyScore().getAttributeId().toString()));
-	    action.addConfiguration(new Configuration(3, "configProfileID", $score.getPrivacyScore().getConfigurationProfileId().toString()));
+		action.addConfiguration(new Configuration(1, "score", $score.score.toString()));
+	    action.addConfiguration(new Configuration(2, "atributeID", $score.attributeId.toString()));
+	    action.addConfiguration(new Configuration(3, "configProfileID", $score.configurationProfileId.toString()));
 	    AdaptationManager.performAdaptation( action );
 end
