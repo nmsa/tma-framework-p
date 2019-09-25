@@ -22,101 +22,114 @@ import com.google.gson.Gson;
 import eubr.atmosphere.tma.planning.utils.PropertiesManager;
 import eubr.atmosphere.tma.utils.TrustworthinessScore;
 
-public class Main 
-{
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+public class Main {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    private static List<FactHandle> factHandleList = new ArrayList<>();
+	private static List<FactHandle> factHandleList = new ArrayList<>();
 
-    private static final String RULES_FILE = "Privacy.drl";
-    // "WSVDResConsumptionQM.drl"
-    // "WSVDPerformanceQM.drl";
-    // "TeaStoreResConsumptionQM.drl";
-    // "TeaStorePerformanceQM.drl";
+	private static final String RULES_FILE = "Privacy.drl";
+	// "WSVDResConsumptionQM.drl"
+	// "WSVDPerformanceQM.drl";
+	// "TeaStoreResConsumptionQM.drl";
+	// "TeaStorePerformanceQM.drl";
 
-    public static void main( String[] args ) {
-        final KieSession ksession = initSession();
-        runConsumer(ksession);
-    }
+	public static void main(String[] args) {
+		final KieSession ksession = initSession();
+		runConsumer(ksession);
+	}
 
-    private static void runConsumer(KieSession ksession) {
-        Consumer<Long, String> consumer = ConsumerCreator.createConsumer();
-        int noMessageFound = 0;
-        int maxNoMessageFoundCount =
-                Integer.parseInt(PropertiesManager.getInstance().getProperty("maxNoMessageFoundCount"));
+	private static void runConsumer(KieSession ksession) {
+		Consumer<Long, String> consumer = ConsumerCreator.createConsumer();
+		int noMessageFound = 0;
+		int maxNoMessageFoundCount = Integer
+				.parseInt(PropertiesManager.getInstance().getProperty("maxNoMessageFoundCount"));
 
-        try {
-            while (true) {
+		try {
+			while (true) {
 
-              ConsumerRecords<Long, String> consumerRecords = consumer.poll(1000);
+				ConsumerRecords<Long, String> consumerRecords = consumer.poll(1000);
 
-              // 1000 is the time in milliseconds consumer will wait if no record is found at broker.
-              if (consumerRecords.count() == 0) {
-                  noMessageFound++;
+				// 1000 is the time in milliseconds consumer will wait if no record is found at
+				// broker.
+				if (consumerRecords.count() == 0) {
+					noMessageFound++;
 
-                  if (noMessageFound > maxNoMessageFoundCount) {
-                    // If no message found count is reached to threshold exit loop.
-                      sleep(2000);
-                  } else {
-                    continue;
-                  }
-              }
+					if (noMessageFound > maxNoMessageFoundCount) {
+						// If no message found count is reached to threshold exit loop.
+						sleep(2000);
+					} else {
+						continue;
+					}
+				}
 
-              LOGGER.info("ConsumerRecords: {}", consumerRecords.count());
+				LOGGER.info("ConsumerRecords: {}", consumerRecords.count());
 
-              // Manipulate the records
-              consumerRecords.forEach(record -> {
-                  validateValue(record, ksession);
-               });
+				// Manipulate the records
+				consumerRecords.forEach(record -> {
+					validateValue(record, ksession);
+				});
 
-              ksession.fireAllRules();
-              LOGGER.info("Rules were applied! ksession.getFactCount(): {}", ksession.getFactCount());
-              removeFactHandles(ksession);
+				//ksession.fireAllRules();
+				LOGGER.info("Rules were applied! ksession.getFactCount(): {}", ksession.getFactCount());
+				removeFactHandles(ksession);
 
-              // commits the offset of record to broker.
-              consumer.commitAsync();
-              sleep(5000);
-            }
-        } finally {
-            consumer.close();
-        }
-    }
+				// commits the offset of record to broker.
+				consumer.commitAsync();
+				sleep(5000);
+			}
+		} finally {
+			consumer.close();
+		}
+	}
 
-    private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
+	private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
         String stringJsonScore = record.value();
         TrustworthinessScore score = new Gson().fromJson(stringJsonScore, TrustworthinessScore.class);
         LOGGER.info(record.toString());
         LOGGER.info("Score: {} / Offset: {}", score.getScore(), record.offset());
-        factHandleList.add(ksession.insert(score));
+        
+        LOGGER.info("privacyScore: " + score.getPrivacyScore());
+		LOGGER.info("ConfigurationProfileID: " + ((score.getPrivacyScore() != null
+				&& score.getPrivacyScore().getConfigurationProfileId() != null)
+						? score.getPrivacyScore().getConfigurationProfileId()
+						: "null"));
+		LOGGER.info("AttributeID: "
+				+ ((score.getPrivacyScore() != null && score.getPrivacyScore().getAttributeId() != null)
+						? score.getPrivacyScore().getAttributeId()
+						: "null"));
+		LOGGER.info("Threshold: "
+				+ ((score.getPrivacyScore() != null && score.getPrivacyScore().getThreshold() != null)
+						? score.getPrivacyScore().getThreshold()
+						: "null"));
+		
+        //factHandleList.add(ksession.insert(score));
     }
 
-    private static void removeFactHandles(KieSession ksession) {
-        for (FactHandle handle : factHandleList) {
-            ksession.delete(handle);
-        }
-    }
+	private static void removeFactHandles(KieSession ksession) {
+		for (FactHandle handle : factHandleList) {
+			ksession.delete(handle);
+		}
+	}
 
-    private static void sleep(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            LOGGER.warn(e.getMessage(), e);
-        }
-    }
+	private static void sleep(int millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			LOGGER.warn(e.getMessage(), e);
+		}
+	}
 
-    private static KieSession initSession() {
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( ResourceFactory.newClassPathResource( RULES_FILE,
-                                                            Main.class ),
-                                                            ResourceType.DRL );
+	private static KieSession initSession() {
+		KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+		kbuilder.add(ResourceFactory.newClassPathResource(RULES_FILE, Main.class), ResourceType.DRL);
 
-        final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addPackages( kbuilder.getKnowledgePackages() );
+		final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+		kbase.addPackages(kbuilder.getKnowledgePackages());
 
-        if ( kbuilder.hasErrors() ) {
-            throw new RuntimeException( "Compilation error.\n" + kbuilder.getErrors().toString() );
-        }
+		if (kbuilder.hasErrors()) {
+			throw new RuntimeException("Compilation error.\n" + kbuilder.getErrors().toString());
+		}
 
-        return kbase.newKieSession();
-    }
+		return kbase.newKieSession();
+	}
 }
