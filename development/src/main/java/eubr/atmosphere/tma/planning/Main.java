@@ -87,22 +87,7 @@ public class Main {
         TrustworthinessScore score = new Gson().fromJson(stringJsonScore, TrustworthinessScore.class);
         LOGGER.info(record.toString());
         LOGGER.info("Score: {} / Offset: {}", score.getScore(), record.offset());
-        
-        LOGGER.info("privacyScore: " + score.getPrivacyScore());
-		LOGGER.info("ConfigurationProfileID: " + ((score.getPrivacyScore() != null
-				&& score.getPrivacyScore().getConfigurationProfileId() != null)
-						? score.getPrivacyScore().getConfigurationProfileId()
-						: "null"));
-		LOGGER.info("AttributeID: "
-				+ ((score.getPrivacyScore() != null && score.getPrivacyScore().getAttributeId() != null)
-						? score.getPrivacyScore().getAttributeId()
-						: "null"));
-		LOGGER.info("Threshold: "
-				+ ((score.getPrivacyScore() != null && score.getPrivacyScore().getThreshold() != null)
-						? score.getPrivacyScore().getThreshold()
-						: "null"));
-		
-        //factHandleList.add(ksession.insert(score));
+        factHandleList.add(ksession.insert(score));
     }
 
 	private static void removeFactHandles(KieSession ksession) {
