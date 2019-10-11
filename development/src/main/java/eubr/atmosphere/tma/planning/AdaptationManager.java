@@ -6,12 +6,9 @@ import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
 import eubr.atmosphere.tma.data.Action;
-import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ActionPlan;
+import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ConfigurationData;
 import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.planning.database.PlanManager;
@@ -55,7 +52,6 @@ public class AdaptationManager {
         plan.setValueTime(Instant.now().getEpochSecond());
 
         plan.setMetricId(1);
-        plan.setQualityModelId(1);
         plan.setStatus(Plan.STATUS.TO_DO);
 
         int planId = planManager.saveNewPlan(plan);
