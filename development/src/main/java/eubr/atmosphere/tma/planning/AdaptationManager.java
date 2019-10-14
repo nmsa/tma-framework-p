@@ -23,7 +23,7 @@ public class AdaptationManager {
     	// TODO sample data. This method should be removed shortly
     	MetricData metricData = new MetricData();
     	metricData.setMetricId(1);
-    	metricData.setValueTime(1554639227);
+    	metricData.setValueTime(1562245202);
     	
         performAdaptation(action, metricData);
     }
