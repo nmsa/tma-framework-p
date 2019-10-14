@@ -2,7 +2,6 @@ package eubr.atmosphere.tma.planning.database;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -21,14 +20,14 @@ public class PlanManager {
 
     public int saveNewPlan(Plan plan) {
         String sql =
-                "INSERT INTO Plan(metricId, valueTime, status) VALUES (?, ?, ?)";
+                "INSERT INTO Plan(metricId, valueTime, status) VALUES (?, FROM_UNIXTIME(?), ?)";
         PreparedStatement ps;
 
         try {
             ps = DatabaseManager.getConnectionInstance().prepareStatement(
                     sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, plan.getMetricId());
-            ps.setTimestamp(2, new Timestamp(plan.getValueTime()));
+            ps.setLong(2, plan.getValueTime());
             ps.setInt(3, plan.getStatus().ordinal());
 
             DatabaseManager databaseManager = new DatabaseManager();

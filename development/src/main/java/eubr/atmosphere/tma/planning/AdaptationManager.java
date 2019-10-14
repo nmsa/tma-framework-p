@@ -10,6 +10,7 @@ import eubr.atmosphere.tma.data.Action;
 import eubr.atmosphere.tma.data.ActionPlan;
 import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ConfigurationData;
+import eubr.atmosphere.tma.data.MetricData;
 import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.planning.database.PlanManager;
 
@@ -19,9 +20,18 @@ public class AdaptationManager {
     private static PlanManager planManager = new PlanManager();
 
     public static void performAdaptation(Action action) {
+    	// TODO sample data. This method should be removed shortly
+    	MetricData metricData = new MetricData();
+    	metricData.setMetricId(1);
+    	metricData.setValueTime(1554639227);
+    	
+        performAdaptation(action, metricData);
+    }
+
+    public static void performAdaptation(Action action, MetricData metricData) {
         LOGGER.info("Adaptation will be performed!");
 
-        Plan plan = createPlan();
+        Plan plan = createPlan(metricData);
         addActionPlan(plan, action);
         planManager.saveActionPlan(plan);
 
@@ -47,12 +57,12 @@ public class AdaptationManager {
         plan.addAction(actionPlan);
     }
 
-    private static Plan createPlan() {
+    private static Plan createPlan(MetricData metricData) {
         Plan plan = new Plan();
         plan.setValueTime(Instant.now().getEpochSecond());
 
-        plan.setMetricId(1);
-        plan.setValueTime(1554639227);
+        plan.setMetricId(metricData.getMetricId());
+        plan.setValueTime(metricData.getValueTime());
         plan.setStatus(Plan.STATUS.TO_DO);
 
         int planId = planManager.saveNewPlan(plan);
