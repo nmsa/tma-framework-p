@@ -52,6 +52,7 @@ public class AdaptationManager {
         plan.setValueTime(Instant.now().getEpochSecond());
 
         plan.setMetricId(1);
+        plan.setValueTime(1554639227);
         plan.setStatus(Plan.STATUS.TO_DO);
 
         int planId = planManager.saveNewPlan(plan);

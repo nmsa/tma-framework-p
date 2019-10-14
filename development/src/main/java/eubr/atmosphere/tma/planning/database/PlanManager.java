@@ -20,14 +20,15 @@ public class PlanManager {
 
     public int saveNewPlan(Plan plan) {
         String sql =
-                "INSERT INTO Plan(metricId, status) VALUES (?, ?)";
+                "INSERT INTO Plan(metricId, valueTime, status) VALUES (?, ?, ?)";
         PreparedStatement ps;
 
         try {
             ps = DatabaseManager.getConnectionInstance().prepareStatement(
                     sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, plan.getMetricId());
-            ps.setInt(2, plan.getStatus().ordinal());
+            ps.setLong(2, plan.getValueTime());
+            ps.setInt(3, plan.getStatus().ordinal());
 
             DatabaseManager databaseManager = new DatabaseManager();
             return databaseManager.execute(ps);
