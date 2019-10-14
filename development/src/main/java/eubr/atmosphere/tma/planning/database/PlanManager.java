@@ -1,5 +1,6 @@
 package eubr.atmosphere.tma.planning.database;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -27,7 +28,7 @@ public class PlanManager {
             ps = DatabaseManager.getConnectionInstance().prepareStatement(
                     sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, plan.getMetricId());
-            ps.setLong(2, plan.getValueTime());
+            ps.setDate(2, new Date(plan.getValueTime()));
             ps.setInt(3, plan.getStatus().ordinal());
 
             DatabaseManager databaseManager = new DatabaseManager();
