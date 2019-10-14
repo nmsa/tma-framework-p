@@ -1,6 +1,5 @@
 package eubr.atmosphere.tma.planning.database;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
