@@ -22,7 +22,7 @@ rule "Performance Score validation - TeaStore Scale up"
         action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
         action.addConfiguration(new Configuration(2, "metadata.name", "teastore-webui"));
         action.addConfiguration(new Configuration(3, "spec.replicas", "2"));
-        AdaptationManager.performAdaptation( action );
+        AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score) );
 end
 
 rule "Performance Score validation - TeaStore Scale down"
@@ -34,5 +34,5 @@ rule "Performance Score validation - TeaStore Scale down"
         action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
         action.addConfiguration(new Configuration(2, "metadata.name", "teastore-webui"));
         action.addConfiguration(new Configuration(3, "spec.replicas", "1"));
-        AdaptationManager.performAdaptation( action );
+        AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score) );
 end

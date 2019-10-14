@@ -13,6 +13,7 @@ import eubr.atmosphere.tma.data.ConfigurationData;
 import eubr.atmosphere.tma.data.MetricData;
 import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.planning.database.PlanManager;
+import eubr.atmosphere.tma.utils.Score;
 
 public class AdaptationManager {
 
@@ -43,6 +44,13 @@ public class AdaptationManager {
         } catch (ExecutionException e) {
             LOGGER.warn(e.getMessage(), e);
         }
+    }
+    
+    public static MetricData obtainMetricData(Score score) {
+    	MetricData metricData = new MetricData();
+    	metricData.setMetricId(score.getMetricId());
+    	metricData.setValueTime(score.getValueTime());
+    	return metricData;
     }
 
     private static void addActionPlan(Plan plan, Action action) {
