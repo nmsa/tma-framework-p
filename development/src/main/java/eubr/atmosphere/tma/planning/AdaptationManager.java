@@ -20,15 +20,6 @@ public class AdaptationManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdaptationManager.class);
     private static PlanManager planManager = new PlanManager();
 
-    public static void performAdaptation(Action action) {
-    	// TODO sample data. This method should be removed shortly
-    	MetricData metricData = new MetricData();
-    	metricData.setMetricId(1);
-    	metricData.setValueTime(1562245202);
-    	
-        performAdaptation(action, metricData);
-    }
-
     public static void performAdaptation(Action action, MetricData metricData) {
         LOGGER.info("Adaptation will be performed!");
 
