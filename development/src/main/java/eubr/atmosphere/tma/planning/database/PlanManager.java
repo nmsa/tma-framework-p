@@ -20,14 +20,14 @@ public class PlanManager {
 
     public int saveNewPlan(Plan plan) {
         String sql =
-                "INSERT INTO Plan(metricId, qualityModelId, status) VALUES (?, ?, ?)";
+                "INSERT INTO Plan(metricId, valueTime, status) VALUES (?, FROM_UNIXTIME(?), ?)";
         PreparedStatement ps;
 
         try {
             ps = DatabaseManager.getConnectionInstance().prepareStatement(
                     sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, plan.getMetricId());
-            ps.setInt(2, plan.getQualityModelId());
+            ps.setLong(2, plan.getValueTime());
             ps.setInt(3, plan.getStatus().ordinal());
 
             DatabaseManager databaseManager = new DatabaseManager();
@@ -54,19 +54,18 @@ public class PlanManager {
                 ps.setInt(3, action.getExecutionOrder());
                 ps.setInt(4, ActionPlan.STATUS.TO_DO.ordinal());
 
-                // This will be used to insert the configurationData
-                int actionPlanId = databaseManager.execute(ps);
-                saveConfigurationData(actionPlanId, action.getConfigurationList());
+                databaseManager.execute(ps);
+                saveConfigurationData(action.getPlanId(), action.getActionId(), action.getConfigurationList());
             }
         } catch (SQLException e) {
             LOGGER.error("[ATMOSPHERE] Error when inserting the actionPlans in the database.", e);
         }
     }
 
-    private void saveConfigurationData(int actionPlanId, List<ConfigurationData> configurationList) {
+    private void saveConfigurationData(int planId, int actionId, List<ConfigurationData> configurationList) {
         String sql =
-                "INSERT INTO ConfigurationData(actionPlanId, configurationId, value) "
-                + "VALUES (?, ?, ?)";
+                "INSERT INTO ConfigurationData(planId, actionId, configurationId, value) "
+                + "VALUES (?, ?, ?, ?)";
         PreparedStatement ps;
 
         try {
@@ -74,9 +73,10 @@ public class PlanManager {
             for (ConfigurationData configuration: configurationList) {
                 ps = DatabaseManager.getConnectionInstance().prepareStatement(
                         sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setInt(1, actionPlanId);
-                ps.setInt(2, configuration.getConfigurationId());
-                ps.setString(3, configuration.getValue());
+                ps.setInt(1, planId);
+                ps.setInt(2, actionId);
+                ps.setInt(3, configuration.getConfigurationId());
+                ps.setString(4, configuration.getValue());
 
                 databaseManager.execute(ps);
             }
