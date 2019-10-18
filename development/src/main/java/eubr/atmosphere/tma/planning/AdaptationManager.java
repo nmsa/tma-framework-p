@@ -10,20 +10,21 @@ import eubr.atmosphere.tma.data.Action;
 import eubr.atmosphere.tma.data.ActionPlan;
 import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ConfigurationData;
+import eubr.atmosphere.tma.data.MetricData;
 import eubr.atmosphere.tma.data.Plan;
-import eubr.atmosphere.tma.data.Plan.STATUS;
 import eubr.atmosphere.tma.planning.database.PlanManager;
+import eubr.atmosphere.tma.utils.Score;
 
 public class AdaptationManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdaptationManager.class);
     
     private static PlanManager planManager = new PlanManager();
-    
-    public static void performAdaptation(Action action) {
+
+    public static void performAdaptation(Action action, MetricData metricData) {
         LOGGER.info("Adaptation will be performed!");
 
-        Plan plan = createPlan();
+        Plan plan = createPlan(metricData);
         addActionPlan(plan, action);
         planManager.saveActionPlan(plan);
 
@@ -36,8 +37,15 @@ public class AdaptationManager {
             LOGGER.warn(e.getMessage(), e);
         }
     }
+    
+    public static MetricData obtainMetricData(Score score) {
+    	MetricData metricData = new MetricData();
+    	metricData.setMetricId(score.getMetricId());
+    	metricData.setValueTime(score.getValueTime());
+    	return metricData;
+    }
 
-    public static void addActionPlan(Plan plan, Action action) {
+    private static void addActionPlan(Plan plan, Action action) {
         // TODO: when we change to more than one action, the execution order needs to be specified
         int executionOrder = 1;
         ActionPlan actionPlan = new ActionPlan(plan.getPlanId(), action.getActionId(), executionOrder);
@@ -49,13 +57,13 @@ public class AdaptationManager {
         plan.addAction(actionPlan);
     }
 
-    public static Plan createPlan() {
+    private static Plan createPlan(MetricData metricData) {
         Plan plan = new Plan();
         plan.setValueTime(Instant.now().getEpochSecond());
 
-        plan.setMetricId(1);
-        plan.setQualityModelId(1);
-        plan.setStatus(STATUS.TO_DO);
+        plan.setMetricId(metricData.getMetricId());
+        plan.setValueTime(metricData.getValueTime());
+        plan.setStatus(Plan.STATUS.TO_DO);
 
         int planId = planManager.saveNewPlan(plan);
         plan.setPlanId(planId);

@@ -21,7 +21,7 @@ rule "Privacy Score Validation - Increase PRIVAAS Anonymization"
 		action.addConfiguration(new Configuration(1, "score", $score.privacyScore.score.toString()));
 	    action.addConfiguration(new Configuration(2, "atributeID", $score.privacyScore.attributeId.toString()));
 	    action.addConfiguration(new Configuration(3, "configProfileID", $score.privacyScore.configurationProfileId.toString()));
-	    AdaptationManager.performAdaptation( action );
+	    AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
 end
 
 rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
@@ -32,5 +32,5 @@ rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
 		action.addConfiguration(new Configuration(1, "score", $score.privacyScore.score.toString()));
 	    action.addConfiguration(new Configuration(2, "atributeID", $score.privacyScore.attributeId.toString()));
 	    action.addConfiguration(new Configuration(3, "configProfileID", $score.privacyScore.configurationProfileId.toString()));
-	    AdaptationManager.performAdaptation( action );
+	    AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
 end

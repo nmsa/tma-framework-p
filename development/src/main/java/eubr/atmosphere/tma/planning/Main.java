@@ -69,7 +69,7 @@ public class Main {
 					validateValue(record, ksession);
 				});
 
-				//ksession.fireAllRules();
+				ksession.fireAllRules();
 				LOGGER.info("Rules were applied! ksession.getFactCount(): {}", ksession.getFactCount());
 				removeFactHandles(ksession);
 
@@ -90,31 +90,33 @@ public class Main {
         factHandleList.add(ksession.insert(score));
     }
 
-	private static void removeFactHandles(KieSession ksession) {
-		for (FactHandle handle : factHandleList) {
-			ksession.delete(handle);
-		}
-	}
+    private static void removeFactHandles(KieSession ksession) {
+        for (FactHandle handle : factHandleList) {
+            ksession.delete(handle);
+        }
+    }
 
-	private static void sleep(int millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-			LOGGER.warn(e.getMessage(), e);
-		}
-	}
+    private static void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
 
-	private static KieSession initSession() {
-		KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-		kbuilder.add(ResourceFactory.newClassPathResource(RULES_FILE, Main.class), ResourceType.DRL);
+    private static KieSession initSession() {
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kbuilder.add( ResourceFactory.newClassPathResource( RULES_FILE,
+                                                            Main.class ),
+                                                            ResourceType.DRL );
 
-		final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-		kbase.addPackages(kbuilder.getKnowledgePackages());
+        final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+        kbase.addPackages( kbuilder.getKnowledgePackages() );
 
-		if (kbuilder.hasErrors()) {
-			throw new RuntimeException("Compilation error.\n" + kbuilder.getErrors().toString());
-		}
+        if ( kbuilder.hasErrors() ) {
+            throw new RuntimeException( "Compilation error.\n" + kbuilder.getErrors().toString() );
+        }
 
-		return kbase.newKieSession();
-	}
+        return kbase.newKieSession();
+    }
 }

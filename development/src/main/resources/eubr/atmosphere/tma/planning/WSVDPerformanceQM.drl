@@ -2,7 +2,7 @@ package eubr.atmosphere.tma.planning
  
 dialect "mvel"
 
-import eubr.atmosphere.tma.planning.PlanController
+import eubr.atmosphere.tma.planning.AdaptationManager
 import eubr.atmosphere.tma.data.Action
 import eubr.atmosphere.tma.data.Configuration
 import eubr.atmosphere.tma.utils.TrustworthinessScore
@@ -13,24 +13,24 @@ declare TrustworthinessScore
       //@timestamp (eventDestinationTimestamp)
  end
 
-rule "Score validation - Wildfly Scale up"
+rule "Performance Score validation - Wildfly Scale up"
     when
-        $score: TrustworthinessScore ( resourceConsumptionScore.score > 0.0800, podCount < 3 )
+        $score: TrustworthinessScore ( performanceScore.score > 0.0800, podCount < 2 )
     then
         Action action = new Action(1, "scale", 9, 5);
         action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
         action.addConfiguration(new Configuration(2, "metadata.name", "wildfly"));
-        action.addConfiguration(new Configuration(3, "spec.replicas", "3"));
-        PlanController.performAdaptation( action );
+        action.addConfiguration(new Configuration(3, "spec.replicas", "2"));
+        AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score) );
 end
 
-rule "Score validation - Wildfly Scale down"
+rule "Performance Score validation - Wildfly Scale down"
     when
-        $score: TrustworthinessScore ( resourceConsumptionScore.score < 0.0240, podCount > 1 )
+        $score: TrustworthinessScore ( performanceScore.score < 0.0240, podCount > 1 )
     then
         Action action = new Action(1, "scale", 9, 5);
         action.addConfiguration(new Configuration(1, "metadata.namespace", "default"));
         action.addConfiguration(new Configuration(2, "metadata.name", "wildfly"));
         action.addConfiguration(new Configuration(3, "spec.replicas", "1"));
-        PlanController.performAdaptation( action );
+        AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score) );
 end
