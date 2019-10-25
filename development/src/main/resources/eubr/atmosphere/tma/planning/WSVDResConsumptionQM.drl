@@ -2,7 +2,7 @@ package eubr.atmosphere.tma.planning
  
 dialect "mvel"
 
-import eubr.atmosphere.tma.planning.AdaptationManager
+import eubr.atmosphere.tma.planning.PlanController
 import eubr.atmosphere.tma.data.Action
 import eubr.atmosphere.tma.data.Configuration
 import eubr.atmosphere.tma.utils.TrustworthinessScore

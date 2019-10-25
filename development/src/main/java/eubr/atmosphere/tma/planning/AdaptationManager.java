@@ -18,6 +18,7 @@ import eubr.atmosphere.tma.utils.Score;
 public class AdaptationManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdaptationManager.class);
+    
     private static PlanManager planManager = new PlanManager();
 
     public static void performAdaptation(Action action, MetricData metricData) {
