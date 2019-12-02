@@ -27,7 +27,8 @@ public class Main {
 
 	private static List<FactHandle> factHandleList = new ArrayList<>();
 
-	private static final String RULES_FILE = "Privacy.drl";
+	private static final String RULES_FILE = "DellSecurityRules.drl";
+	// "Privacy.drl";
 	// "WSVDResConsumptionQM.drl"
 	// "WSVDPerformanceQM.drl";
 	// "TeaStoreResConsumptionQM.drl";
