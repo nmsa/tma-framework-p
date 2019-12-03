@@ -1,1 +1,1 @@
-docker build -t tma-planning:0.1 .
+docker build -t tma-planning-dell:0.1 .
