@@ -18,14 +18,14 @@ rule "Starling Actuation Rule"
         $score: SecurityScore ( score > 0.1400 )
     then
 	    System.out.println("Starling Actuation");
-	    // I am not sure if this resource Id is correct
-        Action action = new Action(80001, "createCase", 80101, 80001);
-        action.addConfiguration(new Configuration(80001, "incidentId", "value"));
-        action.addConfiguration(new Configuration(80002, "incidentSource", "value"));
-        action.addConfiguration(new Configuration(80003, "subject", "value"));
-        action.addConfiguration(new Configuration(80004, "summary", "value"));
-        action.addConfiguration(new Configuration(80005, "is_public", "value"));
-        action.addConfiguration(new Configuration(80006, "caseType", "value"));
-        action.addConfiguration(new Configuration(80007, "aggregatedDomain", "value"));
+        Action action = new Action(80001, "createCase", $score.resourceId, 80001);
+        action.addConfiguration(new Configuration(80001, "incidentId", $score.metricId)); // this id was originally 38
+        action.addConfiguration(new Configuration(80002, "incidentSource", "CloudEA"));
+        action.addConfiguration(new Configuration(80003, "subject", "Non-complient policy discovered"));
+        action.addConfiguration(new Configuration(80004, "summary",
+            "Non-complient policy discovered by Boris Giterman. Please check your McAffee policy distribution"));
+        action.addConfiguration(new Configuration(80005, "is_public", "true"));
+        action.addConfiguration(new Configuration(80006, "caseType", "INCIDENT"));
+        action.addConfiguration(new Configuration(80007, "aggregatedDomain", "Starling"));
         AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score) );
 end
