@@ -19,7 +19,7 @@ rule "Starling Actuation Rule"
     then
 	    System.out.println("Starling Actuation");
         Action action = new Action(80001, "createCase", $score.resourceId, 80001);
-        action.addConfiguration(new Configuration(80001, "incidentId", $score.metricId.toString())); // this id was originally 38
+        action.addConfiguration(new Configuration(80001, "incidentId", "38"));
         action.addConfiguration(new Configuration(80002, "incidentSource", "CloudEA"));
         action.addConfiguration(new Configuration(80003, "subject", "Non-complient policy discovered"));
         action.addConfiguration(new Configuration(80004, "summary",
