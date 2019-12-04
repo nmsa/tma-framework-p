@@ -1,0 +1,62 @@
+package eubr.atmosphere.tma.planning
+
+dialect "mvel"
+
+import eubr.atmosphere.tma.planning.AdaptationManager
+import eubr.atmosphere.tma.data.Action
+import eubr.atmosphere.tma.data.Configuration
+import eubr.atmosphere.tma.utils.SecurityScore
+import eubr.atmosphere.tma.utils.TrustworthinessScore
+
+declare TrustworthinessScore
+      @role(event)
+      @expires(1s)
+      //@timestamp (eventDestinationTimestamp)
+ end
+
+declare SecurityScore
+      @role(event)
+      @expires(1s)
+      //@timestamp (eventDestinationTimestamp)
+ end
+
+rule "Starling Actuation Rule"
+    when
+        $score: SecurityScore ( score > 0.1400 )
+    then
+	    System.out.println("Starling Actuation");
+        Action action = new Action(80001, "createCase", $score.resourceId, 80001);
+        action.addConfiguration(new Configuration(80001, "incidentId", "38"));
+        action.addConfiguration(new Configuration(80002, "incidentSource", "CloudEA"));
+        action.addConfiguration(new Configuration(80003, "subject", "Non-complient policy discovered"));
+        action.addConfiguration(new Configuration(80004, "summary",
+            "Non-complient policy discovered by Boris Giterman. Please check your McAffee policy distribution"));
+        action.addConfiguration(new Configuration(80005, "is_public", "true"));
+        action.addConfiguration(new Configuration(80006, "caseType", "INCIDENT"));
+        action.addConfiguration(new Configuration(80007, "aggregatedDomain", "Starling"));
+        AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score) );
+end
+
+
+rule "Privacy Score Validation - Increase PRIVAAS Anonymization"
+    when
+        $score: TrustworthinessScore ( privacyScore.score < privacyScore.threshold )
+    then
+        Action action = new Action(4, "update", 8, 35001);
+		action.addConfiguration(new Configuration(1, "score", $score.privacyScore.score.toString()));
+	    action.addConfiguration(new Configuration(2, "atributeID", $score.privacyScore.attributeId.toString()));
+	    action.addConfiguration(new Configuration(3, "configProfileID", $score.privacyScore.configurationProfileId.toString()));
+	    AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
+end
+
+rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
+    when
+        $score: TrustworthinessScore ( privacyScore.score >= privacyScore.threshold )
+    then
+		Action action = new Action(4, "none", 8, 35001);
+		action.addConfiguration(new Configuration(1, "score", $score.privacyScore.score.toString()));
+	    action.addConfiguration(new Configuration(2, "atributeID", $score.privacyScore.attributeId.toString()));
+	    action.addConfiguration(new Configuration(3, "configProfileID", $score.privacyScore.configurationProfileId.toString()));
+	    AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
+end
+
