@@ -6,9 +6,9 @@ import eubr.atmosphere.tma.planning.AdaptationManager
 import eubr.atmosphere.tma.data.Action
 import eubr.atmosphere.tma.data.Configuration
 import eubr.atmosphere.tma.utils.SecurityScore
-import eubr.atmosphere.tma.utils.TrustworthinessScore
+import eubr.atmosphere.tma.utils.PrivacyScore
 
-declare TrustworthinessScore
+declare PrivacyScore
       @role(event)
       @expires(1s)
       //@timestamp (eventDestinationTimestamp)
@@ -40,23 +40,23 @@ end
 
 rule "Privacy Score Validation - Increase PRIVAAS Anonymization"
     when
-        $score: TrustworthinessScore ( privacyScore.score < privacyScore.threshold )
+        $score: PrivacyScore ( score < threshold )
     then
         Action action = new Action(4, "update", 8, 35001);
-		action.addConfiguration(new Configuration(1, "score", $score.privacyScore.score.toString()));
-	    action.addConfiguration(new Configuration(2, "atributeID", $score.privacyScore.attributeId.toString()));
-	    action.addConfiguration(new Configuration(3, "configProfileID", $score.privacyScore.configurationProfileId.toString()));
-	    AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
+		action.addConfiguration(new Configuration(1, "score", $score.score.toString()));
+	    action.addConfiguration(new Configuration(2, "atributeID", $score.attributeId.toString()));
+	    action.addConfiguration(new Configuration(3, "configProfileID", $score.configurationProfileId.toString()));
+	    AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score) );
 end
 
 rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
     when
-        $score: TrustworthinessScore ( privacyScore.score >= privacyScore.threshold )
+        $score: PrivacyScore ( score >= threshold )
     then
 		Action action = new Action(4, "none", 8, 35001);
-		action.addConfiguration(new Configuration(1, "score", $score.privacyScore.score.toString()));
-	    action.addConfiguration(new Configuration(2, "atributeID", $score.privacyScore.attributeId.toString()));
-	    action.addConfiguration(new Configuration(3, "configProfileID", $score.privacyScore.configurationProfileId.toString()));
-	    AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
+		action.addConfiguration(new Configuration(1, "score", $score.score.toString()));
+	    action.addConfiguration(new Configuration(2, "atributeID", $score.attributeId.toString()));
+	    action.addConfiguration(new Configuration(3, "configProfileID", $score.configurationProfileId.toString()));
+	    AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score) );
 end
 
