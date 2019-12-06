@@ -15,7 +15,7 @@ declare TrustworthinessScore
 
 rule "Starling Actuation Rule"
     when
-        $score: TrustworthinessScore ( securityScore.score > 0.1400 )
+        $score: TrustworthinessScore ( securityScore.score > 0.1800 )
     then
         System.out.println("Starling Actuation");
         Action action = new Action(80001, "createCase", $score.securityScore.resourceId, 80001);
