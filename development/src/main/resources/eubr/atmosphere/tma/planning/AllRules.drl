@@ -36,20 +36,16 @@ rule "Privacy Score Validation - Increase PRIVAAS Anonymization"
         $score: TrustworthinessScore ( privacyScore.score < privacyScore.threshold )
     then
         Action action = new Action(35001, "update", 8, 35001);
-        action.addConfiguration(new Configuration(1, "score", $score.privacyScore.score.toString()));
-        action.addConfiguration(new Configuration(2, "atributeID", $score.privacyScore.attributeId.toString()));
-        action.addConfiguration(new Configuration(3, "configProfileID", $score.privacyScore.configurationProfileId.toString()));
         AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
 end
 
 rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
     when
-        $score: TrustworthinessScore ( privacyScore.score >= privacyScore.threshold )
+        $score: TrustworthinessScore ( privacyScore.score >= privacyScore.threshold,
+                                       privacyScore.score != 0.0,
+                                       privacyScore.threshold != 0.0)
     then
         Action action = new Action(35002, "none", 8, 35001);
-        action.addConfiguration(new Configuration(1, "score", $score.privacyScore.score.toString()));
-        action.addConfiguration(new Configuration(2, "atributeID", $score.privacyScore.attributeId.toString()));
-        action.addConfiguration(new Configuration(3, "configProfileID", $score.privacyScore.configurationProfileId.toString()));
         AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
 end
 
