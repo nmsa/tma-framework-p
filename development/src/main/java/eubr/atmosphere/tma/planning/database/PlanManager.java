@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import eubr.atmosphere.tma.data.ActionPlan;
 import eubr.atmosphere.tma.data.ConfigurationData;
 import eubr.atmosphere.tma.data.Plan;
-import eubr.atmosphere.tma.utils.DatabaseManager;
+import eubr.atmosphere.tma.database.DatabaseManager;
 
 public class PlanManager {
     

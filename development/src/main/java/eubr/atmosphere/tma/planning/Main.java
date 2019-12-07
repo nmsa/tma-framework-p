@@ -27,7 +27,8 @@ public class Main {
 
 	private static List<FactHandle> factHandleList = new ArrayList<>();
 
-	private static final String RULES_FILE = "Privacy.drl";
+	private static final String RULES_FILE = "AllRules.drl";
+	// "Privacy.drl";
 	// "WSVDResConsumptionQM.drl"
 	// "WSVDPerformanceQM.drl";
 	// "TeaStoreResConsumptionQM.drl";
@@ -84,7 +85,7 @@ public class Main {
 
 	private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
         String stringJsonScore = record.value();
-        TrustworthinessScore score = new Gson().fromJson(stringJsonScore, TrustworthinessScore.class);
+		TrustworthinessScore score = new Gson().fromJson(stringJsonScore, TrustworthinessScore.class);
         LOGGER.info(record.toString());
         LOGGER.info("Score: {} / Offset: {}", score.getScore(), record.offset());
         factHandleList.add(ksession.insert(score));
