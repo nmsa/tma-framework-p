@@ -1,11 +1,14 @@
 package eubr.atmosphere.tma.planning
 
-dialect "mvel"
+//[TO REMOVE] dialect "mvel"
+dialect "java"
 
 import eubr.atmosphere.tma.planning.AdaptationManager
 import eubr.atmosphere.tma.data.Action
 import eubr.atmosphere.tma.data.Configuration
 import eubr.atmosphere.tma.utils.TrustworthinessScore
+import eubr.atmosphere.tma.utils.ResourceConsumptionScore
+import java.util.ArrayList
 
 declare TrustworthinessScore
       @role(event)
@@ -18,8 +21,12 @@ rule "Starling Actuation Rule"
         $score: TrustworthinessScore ( securityScore.score > 0.1800 )
     then
         System.out.println("Starling Actuation");
-        Action action = new Action(80001, "createCase", $score.securityScore.resourceId, 80001);
-        AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.securityScore) );
+        ArrayList<Action> actionList = null;
+        actionList = new ArrayList();
+        Action action;
+        action = new Action(80001, "createCase", $score.getSecurityScore().getResourceId(), 80001);
+        actionList.add(action);
+        AdaptationManager.performAdaptation( actionList, AdaptationManager.obtainMetricData($score.getSecurityScore()) );
 end
 
 
@@ -27,8 +34,11 @@ rule "Privacy Score Validation - Increase PRIVAAS Anonymization"
     when
         $score: TrustworthinessScore ( privacyScore.score < privacyScore.threshold )
     then
-        Action action = new Action(35001, "update", 8, 35001);
-        AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
+        ArrayList<Action> actionList = null;
+        actionList = new ArrayList();
+        Action action;
+        action = new Action(35001, "update", 8, 35001);
+        AdaptationManager.performAdaptation( actionList, AdaptationManager.obtainMetricData($score.getPrivacyScore()) );
 end
 
 rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
@@ -37,7 +47,44 @@ rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
                                        privacyScore.score != 0.0,
                                        privacyScore.threshold != 0.0)
     then
-        Action action = new Action(35002, "none", 8, 35001);
-        AdaptationManager.performAdaptation( action, AdaptationManager.obtainMetricData($score.privacyScore) );
+        ArrayList<Action> actionList = null;
+        actionList = new ArrayList();
+        Action action;
+        action = new Action(35002, "none", 8, 35001);
+        AdaptationManager.performAdaptation( actionList, AdaptationManager.obtainMetricData($score.getPrivacyScore()) );
 end
 
+
+
+
+//Added rule to test out the changes made to make possible more than one action per plan
+rule "My Rule"
+    when
+        $score: TrustworthinessScore (resourceConsumptionScore.score>= 0.0)
+    then       
+        ArrayList<Action> actionList = null;
+        actionList = new ArrayList();
+        Action action;
+	
+	//action = new Action(1, "scale", 3, 1);
+	
+        //action.addConfiguration(new Configuration(1,"metadata.namespace","default"));
+    	//action.addConfiguration(new Configuration(2,"metadata.name","tma-analyze-dei"));
+	//action.addConfiguration(new Configuration(3,"spec.replicas","1"));
+        //actionList.add(action);
+        
+        action = new Action(2,"scale",3,1);
+        action.addConfiguration(new Configuration(4,"metadata.namespace","default"));
+    	action.addConfiguration(new Configuration(5,"metadata.name","tma-dataloader"));
+	action.addConfiguration(new Configuration(6,"spec.replicas","1"));
+        actionList.add(action);
+        //action = new Action(3,"sendMail",3,2);
+        //action.addConfiguration(new Configuration(7,"senderEmail","senderMail"));
+        //action.addConfiguration(new Configuration(8,"senderPassword","pass"));
+        //action.addConfiguration(new Configuration(9,"subject","TMA-P"));
+        //action.addConfiguration(new Configuration(10,"message","teste"));
+        //action.addConfiguration(new Configuration(11,"receiverEmail","Receivermail"));
+	//actionList.add(action);
+        System.out.println("[RULE APPLY] Going to perform adaptation for rule: My Rule");
+        AdaptationManager.performAdaptation( actionList, AdaptationManager.obtainMetricData($score.getResourceConsumptionScore()) );
+end

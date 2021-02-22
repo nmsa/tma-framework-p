@@ -14,6 +14,8 @@ import eubr.atmosphere.tma.data.MetricData;
 import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.planning.database.PlanManager;
 import eubr.atmosphere.tma.utils.Score;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class AdaptationManager {
 
@@ -21,11 +23,21 @@ public class AdaptationManager {
     
     private static PlanManager planManager = new PlanManager();
 
-    public static void performAdaptation(Action action, MetricData metricData) {
+    public static void performAdaptation(ArrayList<Action> actionList, MetricData metricData) {
         LOGGER.info("Adaptation will be performed!");
 
         Plan plan = createPlan(metricData);
-        addActionPlan(plan, action);
+	
+	if(plan.getPlanId() == -1){
+		return;	
+	}
+
+        int executionOrder = 1;
+        for (Action a: actionList) {
+            addActionPlan(plan, a,executionOrder);
+            executionOrder++;
+        }
+        
         planManager.saveActionPlan(plan);
 
         KafkaManager kafkaManager = new KafkaManager();
@@ -45,9 +57,8 @@ public class AdaptationManager {
     	return metricData;
     }
 
-    private static void addActionPlan(Plan plan, Action action) {
-        // TODO: when we change to more than one action, the execution order needs to be specified
-        int executionOrder = 1;
+    private static void addActionPlan(Plan plan, Action action, int executionOrder) {
+        
         ActionPlan actionPlan = new ActionPlan(plan.getPlanId(), action.getActionId(), executionOrder);
 
         for (Configuration config: action.getConfigurationList()) {
