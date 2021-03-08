@@ -47,37 +47,3 @@ rule "Privacy Score Validation - Not Increase PRIVAAS Anonymization"
         Action action = new Action(35002, "none", 8, 35001);
         AdaptationManager.performAdaptation( actionList, AdaptationManager.obtainMetricData($score.getPrivacyScore()) );
 end
-
-
-
-
-//Added rule to test out the changes made to make possible more than one action per plan
-rule "My Rule"
-    when
-        $score: TrustworthinessScore (resourceConsumptionScore.score>= 0.0)
-    then       
-        List<Action> actionList = new ArrayList();
-
-        //Action action = new Action(1, "scale", 3, 1);
-        //action.addConfiguration(new Configuration(1,"metadata.namespace","default"));
-        //action.addConfiguration(new Configuration(2,"metadata.name","tma-analyze-dei"));
-        //action.addConfiguration(new Configuration(3,"spec.replicas","1"));
-        //actionList.add(action);
-        
-        Action action = new Action(2,"scale",3,1);
-        action.addConfiguration(new Configuration(4,"metadata.namespace","default"));
-    	action.addConfiguration(new Configuration(5,"metadata.name","tma-dataloader"));
-        action.addConfiguration(new Configuration(6,"spec.replicas","1"));
-        actionList.add(action);
-        
-        //Action action = new Action(3,"sendMail",3,2);
-        //action.addConfiguration(new Configuration(7,"senderEmail","senderMail"));
-        //action.addConfiguration(new Configuration(8,"senderPassword","pass"));
-        //action.addConfiguration(new Configuration(9,"subject","TMA-P"));
-        //action.addConfiguration(new Configuration(10,"message","teste"));
-        //action.addConfiguration(new Configuration(11,"receiverEmail","Receivermail"));
-        //actionList.add(action);
-        
-        System.out.println("[RULE APPLY] Going to perform adaptation for rule: My Rule");
-        AdaptationManager.performAdaptation( actionList, AdaptationManager.obtainMetricData($score.getResourceConsumptionScore()) );
-end
