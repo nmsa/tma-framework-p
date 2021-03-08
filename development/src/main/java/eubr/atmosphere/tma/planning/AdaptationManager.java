@@ -14,7 +14,7 @@ import eubr.atmosphere.tma.data.MetricData;
 import eubr.atmosphere.tma.data.Plan;
 import eubr.atmosphere.tma.planning.database.PlanManager;
 import eubr.atmosphere.tma.utils.Score;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Iterator;
 
 public class AdaptationManager {
@@ -23,18 +23,18 @@ public class AdaptationManager {
     
     private static PlanManager planManager = new PlanManager();
 
-    public static void performAdaptation(ArrayList<Action> actionList, MetricData metricData) {
+    public static void performAdaptation(List<Action> actionList, MetricData metricData) {
         LOGGER.info("Adaptation will be performed!");
 
         Plan plan = createPlan(metricData);
 	
-	if(plan.getPlanId() == -1){
-		return;	
-	}
+		if(plan.getPlanId() == -1){
+			return;	
+		}
 
         int executionOrder = 1;
         for (Action a: actionList) {
-            addActionPlan(plan, a,executionOrder);
+            addActionPlan(plan, a, executionOrder);
             executionOrder++;
         }
         
