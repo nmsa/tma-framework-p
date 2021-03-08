@@ -23,6 +23,28 @@ public class AdaptationManager {
     
     private static PlanManager planManager = new PlanManager();
 
+    public static void performAdaptation(Action action, MetricData metricData) {
+        LOGGER.info("Adaptation will be performed!");
+
+        Plan plan = createPlan(metricData);
+        
+        if(plan.getPlanId() == -1){
+            return; 
+        }
+
+        addActionPlan(plan, action, 1);
+        planManager.saveActionPlan(plan);
+
+        KafkaManager kafkaManager = new KafkaManager();
+        try {
+            kafkaManager.addItemKafka(plan.getPlanId().toString());
+        } catch (InterruptedException e) {
+            LOGGER.warn(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
+
     public static void performAdaptation(List<Action> actionList, MetricData metricData) {
         LOGGER.info("Adaptation will be performed!");
 
