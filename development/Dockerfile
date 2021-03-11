@@ -1,4 +1,4 @@
-FROM    joseadp/tma-utils
+FROM    tma-utils:0.1
 
 ENV     planning      /atmosphere/tma/planning
 
