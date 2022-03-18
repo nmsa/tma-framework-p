@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
       - name: tma-planning
-        image: joseadp/tma-planning
+        image: tma-planning:0.1
