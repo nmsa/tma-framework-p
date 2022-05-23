@@ -18,86 +18,107 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import eubr.atmosphere.tma.planning.api.RulesManagerRest;
+import eubr.atmosphere.tma.planning.database.DatabaseManager;
 
 import eubr.atmosphere.tma.planning.utils.PropertiesManager;
-import eubr.atmosphere.tma.utils.TrustworthinessScore;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.Duration;
+import eubr.atmosphere.tma.planning.utils.ScoreKafka;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Main {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+public class Main{
+    private final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-	private static List<FactHandle> factHandleList = new ArrayList<>();
+    private final List<FactHandle> factHandleList = new ArrayList<>();
+    
+    private final AtomicBoolean updateRules = new AtomicBoolean(false);
+    
+    private final RulesManagerRest rulesManagerRest = new RulesManagerRest();
 
-	private static final String RULES_FILE = "AllRules.drl";
-	// "Privacy.drl";
-	// "WSVDResConsumptionQM.drl"
-	// "WSVDPerformanceQM.drl";
-	// "TeaStoreResConsumptionQM.drl";
-	// "TeaStorePerformanceQM.drl";
+    public static void main(String[] args){
+        Main planning = new Main();
+        planning.begin();
+    }
+    
+    
+    private void begin() {
+        KieSession ksession = initSession();
+        rulesManagerRest.start(updateRules);
+        runConsumer(ksession);
+    }
+    
+    private void runConsumer(KieSession ksession) {
+            Consumer<Long, String> consumer = ConsumerCreator.createConsumer();
+            int noMessageFound = 0;
+            int maxNoMessageFoundCount = Integer
+                            .parseInt(PropertiesManager.getInstance().getProperty("maxNoMessageFoundCount"));
 
-	public static void main(String[] args) {
-		final KieSession ksession = initSession();
-		runConsumer(ksession);
-	}
+            try {
+                while (true) {
+                    synchronized(updateRules){
+                        if(updateRules.get()){
+                            ksession = initSession();
+                            LOGGER.warn("Rules got updated!");
+                            updateRules.set(false);
+                        }
+                    }
 
-	private static void runConsumer(KieSession ksession) {
-		Consumer<Long, String> consumer = ConsumerCreator.createConsumer();
-		int noMessageFound = 0;
-		int maxNoMessageFoundCount = Integer
-				.parseInt(PropertiesManager.getInstance().getProperty("maxNoMessageFoundCount"));
+                    ConsumerRecords<Long, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
 
-		try {
-			while (true) {
+                    // 1000 is the time in milliseconds consumer will wait if no record is found at
+                    // broker.
+                    if (consumerRecords.count() == 0) {
+                            noMessageFound++;
 
-				ConsumerRecords<Long, String> consumerRecords = consumer.poll(1000);
+                            if (noMessageFound > maxNoMessageFoundCount) {
+                                    // If no message found count is reached to threshold exit loop.
+                                    sleep(2000);
+                            } else {
+                                    continue;
+                            }
+                    }
 
-				// 1000 is the time in milliseconds consumer will wait if no record is found at
-				// broker.
-				if (consumerRecords.count() == 0) {
-					noMessageFound++;
+                    LOGGER.info("ConsumerRecords: {}", consumerRecords.count());
 
-					if (noMessageFound > maxNoMessageFoundCount) {
-						// If no message found count is reached to threshold exit loop.
-						sleep(2000);
-					} else {
-						continue;
-					}
-				}
+                    // Manipulate the records
+                    for(ConsumerRecord<Long, String> record : consumerRecords){
+                        validateValue(record, ksession);
+                    }
 
-				LOGGER.info("ConsumerRecords: {}", consumerRecords.count());
+                    ksession.fireAllRules();
+                    LOGGER.info("Rules were applied! ksession.getFactCount(): {}", ksession.getFactCount());
+                    removeFactHandles(ksession);
 
-				// Manipulate the records
-				consumerRecords.forEach(record -> {
-					validateValue(record, ksession);
-				});
+                    // commits the offset of record to broker.
+                    consumer.commitAsync();
+                    sleep(5000);
+                }
+            } finally {
+                    consumer.close();
+            }
+    }
 
-				ksession.fireAllRules();
-				LOGGER.info("Rules were applied! ksession.getFactCount(): {}", ksession.getFactCount());
-				removeFactHandles(ksession);
-
-				// commits the offset of record to broker.
-				consumer.commitAsync();
-				sleep(5000);
-			}
-		} finally {
-			consumer.close();
-		}
-	}
-
-	private static void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
+    private void validateValue(ConsumerRecord<Long, String> record, KieSession ksession) {
         String stringJsonScore = record.value();
-		TrustworthinessScore score = new Gson().fromJson(stringJsonScore, TrustworthinessScore.class);
+        ScoreKafka score = new Gson().fromJson(stringJsonScore, ScoreKafka.class);
         LOGGER.info(record.toString());
-        LOGGER.info("Score: {} / Offset: {}", score.getScore(), record.offset());
+        LOGGER.info("Score: {} / Offset: {}", 
+                score.getScore().get(score.getScore().keySet().toArray()[0]), record.offset());
         factHandleList.add(ksession.insert(score));
     }
 
-    private static void removeFactHandles(KieSession ksession) {
+    private void removeFactHandles(KieSession ksession) {
         for (FactHandle handle : factHandleList) {
             ksession.delete(handle);
         }
+        factHandleList.clear();
     }
 
-    private static void sleep(int millis) {
+    private void sleep(int millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
@@ -105,19 +126,21 @@ public class Main {
         }
     }
 
-    private static KieSession initSession() {
+    private KieSession initSession() {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( ResourceFactory.newClassPathResource( RULES_FILE,
-                                                            Main.class ),
-                                                            ResourceType.DRL );
-
+        
+        DatabaseManager db = new DatabaseManager();
+        /*String text = new String(Files.readAllBytes(Paths.get("C:\\Users\\Jodao\\Documents\\GitHub\\tma-framework-p\\development\\src\\main\\resources\\eubr\\atmosphere\\tma\\planning\\AllRules.drl")), StandardCharsets.UTF_8);
+        db.saveRules(text);*/
+        kbuilder.add(ResourceFactory.newByteArrayResource(db.readRules()),ResourceType.DRL);
+        
         final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages( kbuilder.getKnowledgePackages() );
 
         if ( kbuilder.hasErrors() ) {
             throw new RuntimeException( "Compilation error.\n" + kbuilder.getErrors().toString() );
         }
-
+        
         return kbase.newKieSession();
     }
 }
