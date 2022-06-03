@@ -53,9 +53,8 @@ public class DatabaseManager {
     
     //used to add the initial file
     public int saveRules(String rulesString) {
-        String sql = "INSERT INTO AdaptationRules(rulesFile) values(?)";
+        String sql = "INSERT INTO AdaptationRules values(1,?)";
         getConnectionInstance();
-        
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             Blob blob = connection.createBlob();
             blob.setBytes(1, rulesString.getBytes());
@@ -79,10 +78,12 @@ public class DatabaseManager {
         byte[] rules = null;
         try(Statement stmt = connection.createStatement()){
             ResultSet rs = stmt.executeQuery(sql);
-            rs.next();
+            if(rs.next()){
+                Blob blob = rs.getBlob("rulesFile");
+                rules = blob.getBytes(1, (int) blob.length());
+            }
+            //else remain and return null to indicate there's nothing in the database
             
-            Blob blob = rs.getBlob("rulesFile");
-            rules = blob.getBytes(1, (int) blob.length());
         }
         catch (SQLException e) {
             LOGGER.error("[ATMOSPHERE] Error when reading adaptation rules from the database.", e);

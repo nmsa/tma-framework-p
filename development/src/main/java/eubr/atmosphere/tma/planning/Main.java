@@ -39,13 +39,23 @@ public class Main{
     
     private final RulesManagerRest rulesManagerRest = new RulesManagerRest();
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException{
         Main planning = new Main();
         planning.begin();
     }
     
     
-    private void begin() {
+    private void begin() throws IOException {
+        DatabaseManager db = new DatabaseManager();
+        if (db.readRules() == null){
+            String text = new String(Files.readAllBytes(
+                    Paths.get("/atmosphere/tma/planning/tma-planning/src/main/resources/eubr/atmosphere/tma/planning/AllRules.drl")), StandardCharsets.UTF_8);
+            if(db.saveRules(text) == -1 ){
+                //means there was an error
+                LOGGER.error("Rules init file couldn't be added to the database! Exiting...");
+                System.exit(1);
+            }
+        }
         KieSession ksession = initSession();
         rulesManagerRest.start(updateRules);
         runConsumer(ksession);
@@ -130,8 +140,6 @@ public class Main{
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         
         DatabaseManager db = new DatabaseManager();
-        /*String text = new String(Files.readAllBytes(Paths.get("C:\\Users\\Jodao\\Documents\\GitHub\\tma-framework-p\\development\\src\\main\\resources\\eubr\\atmosphere\\tma\\planning\\AllRules.drl")), StandardCharsets.UTF_8);
-        db.saveRules(text);*/
         kbuilder.add(ResourceFactory.newByteArrayResource(db.readRules()),ResourceType.DRL);
         
         final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
