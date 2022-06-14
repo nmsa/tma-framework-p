@@ -26,6 +26,7 @@ spec:
   template:
     metadata:
       labels:
+        app: tma-planning
         run: tma-planning
     spec:
       containers:
