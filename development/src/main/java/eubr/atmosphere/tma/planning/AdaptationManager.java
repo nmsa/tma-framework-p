@@ -12,16 +12,15 @@ import eubr.atmosphere.tma.data.Configuration;
 import eubr.atmosphere.tma.data.ConfigurationData;
 import eubr.atmosphere.tma.data.MetricData;
 import eubr.atmosphere.tma.data.Plan;
-import eubr.atmosphere.tma.planning.database.PlanManager;
-import eubr.atmosphere.tma.utils.Score;
+import eubr.atmosphere.tma.planning.database.DatabaseManager;
+import eubr.atmosphere.tma.planning.utils.ScoreKafka;
 import java.util.List;
-import java.util.Iterator;
 
 public class AdaptationManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdaptationManager.class);
     
-    private static PlanManager planManager = new PlanManager();
+    private static DatabaseManager databaseManager = new DatabaseManager();
 
     public static void performAdaptation(Action action, MetricData metricData) {
         LOGGER.info("Adaptation will be performed!");
@@ -33,14 +32,12 @@ public class AdaptationManager {
         }
 
         addActionPlan(plan, action, 1);
-        planManager.saveActionPlan(plan);
+        databaseManager.saveActionPlan(plan);
 
         KafkaManager kafkaManager = new KafkaManager();
         try {
             kafkaManager.addItemKafka(plan.getPlanId().toString());
-        } catch (InterruptedException e) {
-            LOGGER.warn(e.getMessage(), e);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             LOGGER.warn(e.getMessage(), e);
         }
     }
@@ -50,9 +47,9 @@ public class AdaptationManager {
 
         Plan plan = createPlan(metricData);
 	
-		if(plan.getPlanId() == -1){
-			return;	
-		}
+        if(plan.getPlanId() == -1){
+                return;	
+        }
 
         int executionOrder = 1;
         for (Action a: actionList) {
@@ -60,22 +57,21 @@ public class AdaptationManager {
             executionOrder++;
         }
         
-        planManager.saveActionPlan(plan);
+        databaseManager.saveActionPlan(plan);
 
         KafkaManager kafkaManager = new KafkaManager();
         try {
             kafkaManager.addItemKafka(plan.getPlanId().toString());
-        } catch (InterruptedException e) {
-            LOGGER.warn(e.getMessage(), e);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             LOGGER.warn(e.getMessage(), e);
         }
     }
     
-    public static MetricData obtainMetricData(Score score) {
+    public static MetricData obtainMetricData(ScoreKafka score, int metricId) {
     	MetricData metricData = new MetricData();
-    	metricData.setMetricId(score.getMetricId());
+    	metricData.setMetricId(metricId);
     	metricData.setValueTime(score.getValueTime());
+        metricData.setResourceId(score.getResourceId());
     	return metricData;
     }
 
@@ -97,8 +93,9 @@ public class AdaptationManager {
         plan.setMetricId(metricData.getMetricId());
         plan.setValueTime(metricData.getValueTime());
         plan.setStatus(Plan.STATUS.TO_DO);
+        plan.setResourceId(metricData.getResourceId());
 
-        int planId = planManager.saveNewPlan(plan);
+        int planId = databaseManager.saveNewPlan(plan);
         plan.setPlanId(planId);
         return plan;
     }

@@ -1,3 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tma-planning
+  labels:
+    app: tma-planning
+spec:
+  type: 
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: tma-planning
+---
 apiVersion: apps/v1
 kind: Deployment
 
@@ -7,12 +21,16 @@ metadata:
 spec:
   selector:
     matchLabels:
+      app: tma-planning
       run: tma-planning
   template:
     metadata:
       labels:
+        app: tma-planning
         run: tma-planning
     spec:
       containers:
       - name: tma-planning
         image: tma-planning:0.1
+        ports:
+        - containerPort: 8080
